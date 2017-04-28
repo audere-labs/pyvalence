@@ -1,0 +1,6 @@
+data/
+tools/
+.DS_Store
+*.csv
+__pycache__/
+.ipynb_checkpoints
