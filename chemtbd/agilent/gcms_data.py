@@ -8,10 +8,10 @@ from chemtbd.agilent.gcms_base import GcmsIoBase
 '''
 
 TIC_COLSTR = {
-    'tic': ('data', 'f4'),   
+    'tic': ('ms', 'f4'),   
 }
 TME_COLSTR = {
-    'tme': ('data', 'f4')
+    'tme': ('ms', 'f4')
 }
 COLSTR_KEY = {'tic': TIC_COLSTR, 'tme': TME_COLSTR}
 
@@ -58,7 +58,9 @@ class GcmsData(GcmsIoBase):
             file_path: path to DATA.MS file
 
         Attributes:
-            data: single merged data frame
+            data: tic, tme tables as single DataFrame
+            tic: tic column from data
+            tme: tme column from data
 
         Methods:
             __call__: returns data attribute
@@ -81,6 +83,14 @@ class GcmsData(GcmsIoBase):
         if self._data is None:
             self._data = self._build_data()
         return self._data
+
+    @property
+    def tic(self):
+        return self.data.filter(regex=r'^tic_', axis=1)
+    
+    @property
+    def tme(self):
+        return self.data.filter(regex=r'^tme_', axis=1)
 
     def __call__(self):
         ''' shortcut to data '''

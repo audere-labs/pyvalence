@@ -6,7 +6,6 @@ from chemtbd.agilent.gcms_base import GcmsIoBase
 
 '''
     io for Agilent .D RESULTS.CSV file
-
 '''
 
 TIC_COLSTR = {
@@ -107,7 +106,10 @@ class GcmsResult(GcmsIoBase):
             file_path: path to RESULTS.csv file
 
         Attributes:
-            data: single merged data frame
+            data: tic, lib, and fid tables as single DataFrame
+            tic: tic columns from data
+            lib: lib columns from data
+            fid: fid columns from data
 
         Methods:
              __call__: returns data attribute
@@ -130,6 +132,18 @@ class GcmsResult(GcmsIoBase):
         if self._data is None:
             self._data = self._build_data()
         return self._data
+
+    @property
+    def tic(self):
+        return self.data.filter(regex=r'^tic_', axis=1)
+
+    @property
+    def lib(self):
+        return self.data.filter(regex=r'^lib_', axis=1)
+
+    @property
+    def fid(self):
+        return self.data.filter(regex=r'^fid_', axis=1)
 
     def __call__(self):
         ''' shortcut to data '''

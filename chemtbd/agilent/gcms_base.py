@@ -2,6 +2,10 @@ import numpy as np
 import pandas as pd
 
 '''
+    common io functionality for Agilent .D table files
+
+        - RESULTS.CSV
+        - DATA.MS
 '''
 
 def clean_name(item):
@@ -10,12 +14,12 @@ def clean_name(item):
 
 
 def np_type(item):
-    ''' return np type from clstr item '''
+    ''' return np type from colstr item '''
     return item[1]
 
 
 def pd_columns(header, colstr):
-    ''' return clean header column name
+    ''' return clean column names for header
         specification in pd DataFrame
     '''
     return [clean_name(colstr[col]) for col in header]
@@ -54,8 +58,8 @@ class GcmsIoBase(object):
         '''
         key, colstr = column_structure(header, self.col_keys)
         return (pd.DataFrame(data, columns=pd_columns(header, colstr))
-                .apply(pd.to_numeric, errors='ignore')
-                .add_prefix('{}_'.format(key)))
+                  .apply(pd.to_numeric, errors='ignore')
+                  .add_prefix('{}_'.format(key)))
 
 
 
