@@ -2,7 +2,7 @@ import re
 import csv
 import numpy as np
 import pandas as pd
-from gcms_base import GcmsIoBase
+from chemtbd.agilent.gcms_base import GcmsIoBase
 
 '''
     io for Agilent .D RESULTS.CSV file
@@ -96,6 +96,9 @@ class GcmsResult(GcmsIoBase):
 
         Attributes:
             data: single merged data frame
+
+        Methods:
+             __call__: returns data attribute
     '''
     def __init__(self, file_path):
         super().__init__(COLSTR_KEY)
@@ -112,7 +115,10 @@ class GcmsResult(GcmsIoBase):
         ''' tid, lib and fid as one table with
             rows aligned according to original `Header=` field
         ''' 
-        if not self._data:
+        if self._data is None:
             self._data = self._build_data()
         return self._data
 
+    def __call__(self):
+        ''' shortcut to data '''
+        return self.data

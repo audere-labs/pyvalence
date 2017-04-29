@@ -34,6 +34,13 @@ def column_structure(header, keys):
 
 class GcmsIoBase(object):
     '''
+        Base Agilent gcms reader class
+        
+        Arguments:
+            col_keys: dictionary containing table structure
+        
+        Methods:
+            as_dataframe: returns input data transformed to pd DataFrame
 
     '''
     def __init__(self, col_keys):
