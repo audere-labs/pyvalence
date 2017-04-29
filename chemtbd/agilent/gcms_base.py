@@ -26,10 +26,11 @@ def column_structure(header, keys):
         table header
     '''
     for key, val in keys.items():
-        ref = val.keys()
-        if all([col in ref for col in header]):
+        if set(header) == set(val.keys()):
             return key, val
-    assert 'invalid table structure'
+    raise Exception(
+        'data is jacked: {}'.format(header)
+    )
 
 
 class GcmsIoBase(object):

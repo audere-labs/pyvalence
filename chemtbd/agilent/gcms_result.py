@@ -10,30 +10,42 @@ from chemtbd.agilent.gcms_base import GcmsIoBase
 '''
 
 TIC_COLSTR = {
-        'Header=': ('header=', 'O'),
-        'Peak': ('peak', 'i4'),
-        'R.T.': ('rt', 'f4'),
-        'First': ('first', 'i4'),
-        'Max': ('max', 'i4'),
-        'Last': ('last', 'i4'),
-        'PK  TY': ('pk_ty', 'O'),
-        'Height': ('height', 'i4'),
-        'Area': ('area', 'i4'),
-        'Pct Max': ('pct_max', 'f4'),
-        'Pct Total': ('pct_total', 'f4')}
+    'Header=': ('header=', 'O'),
+    'Peak': ('peak', 'i4'),
+    'R.T.': ('rt', 'f4'),
+    'First': ('first', 'i4'),
+    'Max': ('max', 'i4'),
+    'Last': ('last', 'i4'),
+    'PK  TY': ('pk_ty', 'O'),
+    'Height': ('height', 'i4'),
+    'Area': ('area', 'i4'),
+    'Pct Max': ('pct_max', 'f4'),
+    'Pct Total': ('pct_total', 'f4')
+}
 
 LIB_COLSTR = {
-        'Header=': ('Header=', 'O'),
-        'PK': ('pk', 'i4'),
-        'RT': ('rt', 'f4'),
-        'Area Pct': ('pct_area', 'f4'),
-        'Library/ID': ('library_id', 'O'),
-        'Ref': ('ref', 'i4' ),
-        'CAS': ('cas', 'O'),
-        'Qual': ('qual', 'i4'),
-        }
+    'Header=': ('header=', 'O'),
+    'PK': ('pk', 'i4'),
+    'RT': ('rt', 'f4'),
+    'Area Pct': ('pct_area', 'f4'),
+    'Library/ID': ('library_id', 'O'),
+    'Ref': ('ref', 'i4' ),
+    'CAS': ('cas', 'O'),
+    'Qual': ('qual', 'i4'),
+}
 
-FID_COLSTR = { }
+FID_COLSTR = { 
+    'Header=': ('header=', 'O'),
+    'Peak': ('peak', 'i4'),
+    'R.T.': ('rt', 'f4'),
+    'Start': ('first', 'i4'),
+    'End': ('end', 'i4'),
+    'PK TY': ('pk_ty', '0'),
+    'Height': ('height', 'i4'),
+    'Area': ('area', 'i4'),
+    'Pct Max': ('pct_max', 'f4'),
+    'Pct Total': ('pct_total', 'f4')
+}
 
 COLSTR_KEY = {'tic': TIC_COLSTR, 'lib': LIB_COLSTR, 'fid': FID_COLSTR}
 

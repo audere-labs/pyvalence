@@ -7,8 +7,13 @@ from chemtbd.agilent.gcms_base import GcmsIoBase
     io for Agilent DATA.ms file
 '''
 
-DATA_COLSTR = {'tic': ('tic', 'f4'), 'tme': ('tme', 'f4')}
-COLSTR_KEY = {'data': DATA_COLSTR}
+TIC_COLSTR = {
+    'tic': ('data', 'f4'),   
+}
+TME_COLSTR = {
+    'tme': ('data', 'f4')
+}
+COLSTR_KEY = {'tic': TIC_COLSTR, 'tme': TME_COLSTR}
 
 def reader(file_path):
 
