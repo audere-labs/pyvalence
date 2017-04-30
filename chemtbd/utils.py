@@ -24,5 +24,4 @@ def commafix(root_dir):
             
 
 if __name__ == '__main__':
-
     commafix('../data/test3')

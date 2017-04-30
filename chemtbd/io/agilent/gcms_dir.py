@@ -1,8 +1,8 @@
 from chemtbd import utils
-from chemtbd.agilent.gcms_data import GcmsData
-from chemtbd.agilent.gcms_result import GcmsResult
+from .gcms_data import GcmsData
+from .gcms_results import GcmsResults
 
-AGILENT_READERS = {
+FILE_STR = {
     'acqmeth.txt': None,
     'audit.txt': None,
     'cnorm.ini': None,
@@ -14,11 +14,11 @@ AGILENT_READERS = {
     'percent.txt': None,
     'pre_post.ini': None,
     'qreport.txt': None,
-    'results.csv': GcmsResult
+    'results.csv': GcmsResults
 }
 
 
-class Agilent(object):
+class GcmsDir(object):
     ''' read Agilent gcms files from provided directory
 
         Arguments: 
@@ -28,34 +28,38 @@ class Agilent(object):
             raw: data extracted from data.ms as pd DataFrame
             results: data extracted from results.csv as pd DataFrame
     '''
-    def __init__(self, dir_path):
+    def __init__(self, dir_path, file_str=FILE_STR):
+        self.dir_path = dir_path
+        self.file_str = file_str
         self.files = {fn.lower(): fp for fn, fp in utils.diriter(dir_path)}
         self._data = {fn.lower(): None for fn in self.files}
 
     def _data_cache(self, key):
         ''' load or return data associated with file key
+            TODO: organize / refactor exceptions
         '''
         if key not in self._data:
-            assert 'file does not exist in provided directory'
-
-        if key not in AGILENT_READERS:
-            assert 'file not supported'
-
-        if not AGILENT_READERS[key]:
-            assert 'file not supported'
+            raise KeyError(
+                '{} not in {}'.format(key, self.dir_path))
+        if key not in self.file_str:
+            raise KeyError(
+                '{} not a recognized file'.format(key))
+        if not self.file_str[key]:
+            raise NotImplementedError(
+                'parser for {} not yet implemented'.format(key))
 
         if self._data[key] is None:
-            self._data[key] = AGILENT_READERS[key](self.files[key])
+            self._data[key] = self.file_str[key](self.files[key])
         return self._data[key]
 
     @property
-    def raw(self):
-        key = 'data.ms'
-        return self._data_cache(key)
+    def data(self):
+        ''' return data from data.ms
+        '''
+        return self._data_cache('data.ms')
 
     @property
     def results(self):
-        key = 'results.csv'
-        return self._data_cache(key)
-
-
+        ''' return data from results.csv
+        '''
+        return self._data_cache('results.csv')

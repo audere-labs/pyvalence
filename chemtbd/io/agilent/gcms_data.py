@@ -1,17 +1,17 @@
 import struct
 import numpy as np
 import pandas as pd
-from chemtbd.agilent.gcms_base import GcmsIoBase
+from chemtbd.io.agilent.gcms_base import GcmsIoBase
 
 '''
     io for Agilent DATA.ms file
 '''
 
 TIC_COLSTR = {
-    'tic': ('ms', 'f4'),   
+    'tic': ('tic', 'f4'),   
 }
 TME_COLSTR = {
-    'tme': ('ms', 'f4')
+    'tme': ('tme', 'f4')
 }
 COLSTR_KEY = {'tic': TIC_COLSTR, 'tme': TME_COLSTR}
 
@@ -46,7 +46,7 @@ def reader(file_path):
             tic[i] = struct.unpack('>I', f.read(4))[0]
             f.seek(npos)
         f.close()
-        return [[['tic']] + tic.tolist(), [['tme']] + tme.tolist()]
+        return [], [[['tic']] + tic.tolist(), [['tme']] + tme.tolist()]
     return total_trace(file_path)
 
 
@@ -66,32 +66,15 @@ class GcmsData(GcmsIoBase):
             __call__: returns data attribute
     '''
     def __init__(self, file_path):
-        super().__init__(COLSTR_KEY)
-        self.tables = reader(file_path)
-
-    def _build_data(self):
-        ''' convert tables to pandas dataframe
-        '''
-        build = lambda tbl: self.as_dataframe(tbl[0], tbl[1:])
-        return pd.concat(map(build, self.tables), axis=1)
-
-    @property
-    def data(self):
-        ''' tid, lib and fid as one table with
-            rows aligned according to original `Header=` field
-        ''' 
-        if self._data is None:
-            self._data = self._build_data()
-        return self._data
+        super().__init__(COLSTR_KEY, reader, file_path)
 
     @property
     def tic(self):
-        return self.data.filter(regex=r'^tic_', axis=1)
+        ''' return tic series '''
+        return self._access('tic')
     
     @property
     def tme(self):
-        return self.data.filter(regex=r'^tme_', axis=1)
+        ''' return tme series '''
+        return self._access('tme')
 
-    def __call__(self):
-        ''' shortcut to data '''
-        return self.data

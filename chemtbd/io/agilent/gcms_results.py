@@ -2,7 +2,7 @@ import re
 import csv
 import numpy as np
 import pandas as pd
-from chemtbd.agilent.gcms_base import GcmsIoBase
+from .gcms_base import GcmsIoBase
 
 '''
     io for Agilent .D RESULTS.CSV file
@@ -98,7 +98,7 @@ def reader(file_path):
     return scan_csv(csv.reader(open(file_path)))
 
 
-class GcmsResult(GcmsIoBase):
+class GcmsResults(GcmsIoBase):
     ''' manages reading of Agilent RESULT.csv
         and mutation of tables into single pandas df
         
@@ -115,36 +115,23 @@ class GcmsResult(GcmsIoBase):
              __call__: returns data attribute
     '''
     def __init__(self, file_path):
-        super().__init__(COLSTR_KEY)
-        self.meta, self.tables = reader(file_path)
-
-    def _build_data(self):
-        ''' convert tables to pandas dataframe
-        '''
-        build = lambda tbl: self.as_dataframe(tbl[0], tbl[1:])
-        return pd.concat(map(build, self.tables), axis=1)
-
-    @property
-    def data(self):
-        ''' tid, lib and fid as one table with
-            rows aligned according to original `Header=` field
-        ''' 
-        if self._data is None:
-            self._data = self._build_data()
-        return self._data
+        super().__init__(COLSTR_KEY, reader, file_path)
 
     @property
     def tic(self):
-        return self.data.filter(regex=r'^tic_', axis=1)
+        ''' return tic table
+        '''
+        return self._access('tic')
 
     @property
     def lib(self):
-        return self.data.filter(regex=r'^lib_', axis=1)
+        ''' return lib table
+        '''
+        return self._access('lib')
 
     @property
     def fid(self):
-        return self.data.filter(regex=r'^fid_', axis=1)
+        ''' return fid table
+        '''
+        return self._access('fid')
 
-    def __call__(self):
-        ''' shortcut to data '''
-        return self.data
