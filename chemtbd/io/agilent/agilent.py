@@ -86,7 +86,3 @@ class Agilent(object):
         ''' get result attr from all folders as stacked DataFrame
         '''
         return self.stack_results(attr)
-
-
-
-

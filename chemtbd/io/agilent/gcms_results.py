@@ -134,4 +134,3 @@ class GcmsResults(GcmsIoBase):
         ''' return fid table
         '''
         return self._access('fid')
-
