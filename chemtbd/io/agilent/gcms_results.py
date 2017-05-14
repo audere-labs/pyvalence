@@ -121,16 +121,16 @@ class GcmsResults(GcmsIoBase):
     def tic(self):
         ''' return tic table
         '''
-        return self._access('tic')
+        return self['tic']
 
     @property
     def lib(self):
         ''' return lib table
         '''
-        return self._access('lib')
+        return self['lib']
 
     @property
     def fid(self):
         ''' return fid table
         '''
-        return self._access('fid')
+        return self['fid']

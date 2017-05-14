@@ -71,10 +71,10 @@ class GcmsData(GcmsIoBase):
     @property
     def tic(self):
         ''' return tic series '''
-        return self._access('tic')
+        return self['tic']
     
     @property
     def tme(self):
         ''' return tme series '''
-        return self._access('tme')
+        return self['tme']
 
