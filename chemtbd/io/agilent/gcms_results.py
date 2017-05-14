@@ -106,13 +106,9 @@ class GcmsResults(GcmsIoBase):
             file_path: path to RESULTS.csv file
 
         Attributes:
-            data: tic, lib, and fid tables as single DataFrame
-            tic: tic columns from data
-            lib: lib columns from data
-            fid: fid columns from data
-
-        Methods:
-             __call__: returns data attribute
+            tic: tic data as DataFrame
+            lib: lib data as DataFrame
+            fid: fid data as DataFrame
     '''
     def __init__(self, file_path):
         super().__init__(COLSTR_KEY, reader, file_path)

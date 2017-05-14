@@ -14,9 +14,11 @@ class Agilent(object):
             from_list: same as default
 
         Attributes:
-            [dir_key]: GcmsDir object associated with dir_key
             keys: dir_keys
-            data: 
+            datams: data collected from data.ms files as DataFrame
+            results_fid: fid table from results.csv files as DataFrame
+            resutls_lib: lib table from results.csv files as DataFrame
+            results_tic: tic table from result.csv files as DataFrame
     '''
 
     @classmethod
@@ -42,8 +44,7 @@ class Agilent(object):
         return cls(dir_list, dir_keys)
     
     def common_stack(self, accessor, attr):
-        ''' load all attr from accessor
-            and stack in single df
+        ''' load all attr from accessor and stack in single df
         '''
         dfs = []
         for key, val in self._folders.items():
@@ -53,8 +54,6 @@ class Agilent(object):
         return pd.concat(dfs, axis=0).set_index('key')
 
     def __init__(self, dir_list, dir_keys = None):
-        '''
-        '''
         if not dir_keys:
             dir_keys = [os.path.basename(path) for path in dir_list]
         
@@ -65,7 +64,7 @@ class Agilent(object):
         self._results_tic = self.common_stack('results', 'tic')
         self._results_fid = self.common_stack('results', 'fid')
         self._results_lib = self.common_stack('results', 'lib')
-        self._datams = self.common_stack('data', 'tme')
+        self._datams = self.common_stack('data', 'data')
 
     def keys(self):
         ''' get dir_keys
