@@ -5,5 +5,3 @@ tools/
 __pycache__/
 .ipynb_checkpoints
 *.json
-*.swp
-*.pyc

@@ -34,8 +34,7 @@ def column_structure(header, keys):
             return key, val
     raise Exception(
         # TODO: Formalize this exception
-        'expected column structure: {}, found {}'.format(
-            val.keys(), header) 
+        'data is jacked: {}'.format(header)
     )
 
 
