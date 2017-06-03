@@ -14,9 +14,11 @@ class Agilent(object):
             from_list: same as default
 
         Attributes:
-            [dir_key]: GcmsDir object associated with dir_key
             keys: dir_keys
-            data: 
+            datams: data collected from data.ms files as DataFrame
+            results_fid: fid table from results.csv files as DataFrame
+            resutls_lib: lib table from results.csv files as DataFrame
+            results_tic: tic table from result.csv files as DataFrame
     '''
 
     @classmethod
@@ -41,48 +43,55 @@ class Agilent(object):
         '''
         return cls(dir_list, dir_keys)
     
+    def common_stack(self, accessor, attr):
+        ''' load all attr from accessor and stack in single df
+        '''
+        dfs = []
+        for key, val in self._folders.items():
+            df = getattr(val, accessor)[attr]
+            if not df is None:
+                dfs.append(df.assign(key=key))
+        return pd.concat(dfs, axis=0).set_index('key')
 
     def __init__(self, dir_list, dir_keys = None):
         if not dir_keys:
             dir_keys = [os.path.basename(path) for path in dir_list]
+        
         self._folders = {
             k: GcmsDir(v) for k, v in zip(dir_keys, dir_list)
         }
 
-    def __getitem__(self, key):
-        return self._folders[key]
-    
-    def stack_results(self, attr):
-        ''' this is sloppy - TODO: refactor
-        '''
-        dfs = []
-        for key, val in self._folders.items():
-            df = val.results[attr]
-            if not df is None:
-                dfs.append(df.assign(key = key))
-        return pd.concat(dfs, axis=0)
-
-    def stack_data(self, attr):
-        ''' this is sloppy - TODO: refactor
-        '''
-        dfs = []
-        for key, val in self._folders.items():
-            df = val.data[attr]
-            if not df is None:
-                dfs.append(df.assign(key = key))
-        return pd.concat(dfs, axis=0)
+        self._results_tic = self.common_stack('results', 'tic')
+        self._results_fid = self.common_stack('results', 'fid')
+        self._results_lib = self.common_stack('results', 'lib')
+        self._datams = self.common_stack('data', 'data')
 
     def keys(self):
         ''' get dir_keys
         '''
         return self._folders.keys()
-
-    def data(self, attr):
-        ''' get data attr from all folders as stacked DataFrame
+    
+    @property
+    def datams(self):
+        ''' data.ms from all folders as stacked DataFrame
         '''
-        return self.stack_data(attr)
-
-    def results(self, attr):
-        ''' get result attr from all folders as stacked DataFrame
+        return self._datams
+    
+    @property
+    def results_fid(self):
+        ''' results.csv fid data from all folders as stacked DataFrame
         '''
-        return self.stack_results(attr)
+        return self._results_fid
+    
+    @property
+    def results_lib(self):
+        ''' results.csv lib data from all folders as stacked DataFrame
+        '''
+        return self._results_lib
+
+    @property
+    def results_tic(self):
+        ''' results.csv tic data from all folders as stacked DataFrame
+        '''
+        return self._results_tic
+

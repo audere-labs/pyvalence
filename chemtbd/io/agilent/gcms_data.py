@@ -7,13 +7,11 @@ from chemtbd.io.agilent.gcms_base import GcmsIoBase
     io for Agilent DATA.ms file
 '''
 
-TIC_COLSTR = {
+DATA_COLSTR = {
     'tic': ('tic', 'f4'),   
-}
-TME_COLSTR = {
     'tme': ('tme', 'f4')
 }
-COLSTR_KEY = {'tic': TIC_COLSTR, 'tme': TME_COLSTR}
+COLSTR_KEY = {'data': DATA_COLSTR}
 
 def reader(file_path):
 
@@ -46,7 +44,8 @@ def reader(file_path):
             tic[i] = struct.unpack('>I', f.read(4))[0]
             f.seek(npos)
         f.close()
-        return [], [[['tic']] + tic.tolist(), [['tme']] + tme.tolist()]
+        jj = [['tic', 'tme']] + [list(a) for a in list(zip(tic,tme))]
+        return [], [jj]
     return total_trace(file_path)
 
 
@@ -58,23 +57,12 @@ class GcmsData(GcmsIoBase):
             file_path: path to DATA.MS file
 
         Attributes:
-            data: tic, tme tables as single DataFrame
-            tic: tic column from data
-            tme: tme column from data
-
-        Methods:
-            __call__: returns data attribute
+            data: tic, tme arrays as single DataFrame
     '''
     def __init__(self, file_path):
         super().__init__(COLSTR_KEY, reader, file_path)
 
     @property
-    def tic(self):
-        ''' return tic series '''
-        return self._access('tic')
-    
-    @property
-    def tme(self):
-        ''' return tme series '''
-        return self._access('tme')
-
+    def data(self):
+        ''' return tic, tme data '''
+        return self['data']

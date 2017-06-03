@@ -25,7 +25,7 @@ class GcmsDir(object):
             dir_path: directory to agilent gcms files
 
         Attributes:
-            raw: data extracted from data.ms as pd DataFrame
+            data: data extracted from data.ms as pd DataFrame
             results: data extracted from results.csv as pd DataFrame
     '''
     def __init__(self, dir_path, file_str=FILE_STR):
@@ -36,8 +36,8 @@ class GcmsDir(object):
 
     def _data_cache(self, key):
         ''' load or return data associated with file key
-            TODO: organize / refactor exceptions
         '''
+        # TODO: organize / refactor exceptions
         if key not in self._data:
             raise KeyError(
                 '{} not in {}'.format(key, self.dir_path))
