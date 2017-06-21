@@ -25,6 +25,8 @@ class GCQuant(object):
         self._compiled = gcm._compiled(lib,area)
         self._stdcurves = gcm._stdcurves(self._compiled,standards)
         self._concentrations = gcm._concentrations(self.compiled,self._stdcurves)
+        self._concentrations_exp = gcm._concentrations_exp(self._concentrations,standards)
+        self._concentrations_std = gcm._concentrations_std(self._concentrations,standards)
         self._plots = []
 
     @property
@@ -38,10 +40,13 @@ class GCQuant(object):
     @property 
     def concentrations(self):
         return self._concentrations
-    
-    @classmethod
-    def pivot(self,pivot_data,stdcurves):
-        return gcm._pivot(pivot_data,stdcurves)
 
+    @property 
+    def concentrations_exp(self):
+        return self._concentrations_exp   
+
+    @property 
+    def concentrations_std(self):
+        return self._concentrations_std
 
 

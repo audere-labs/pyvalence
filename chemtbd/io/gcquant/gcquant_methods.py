@@ -97,19 +97,6 @@ class GCMethods(object):
 		return pd.merge(b,d,on='library_id')
 		# return matched_cal_conc
 
-	def _pivot(self,pivot_data,stdcurves):
-		pivot_data = pivot_data.reset_index()
-		stdcurves_keys = list(stdcurves.keys()[1:])
-		
-		#Data for Concetration Stacked Concentraction Percent
-		unknowns_per_df = pivot_data[-pivot_data['key'].isin(stdcurves_keys)]
-		unknowns_per_pvt = pd.pivot_table(unknowns_per_df,
-								   index='key',
-								   columns='library_id',
-								   values='conc')
-		return unknowns_per_pvt.transpose()
-		# return concentrations
-
 	def _concentrations(self,compiled,stdcurves):
 		'''
 		this  function takes a dataframe which contains species matched to an area (compiled) 
@@ -142,3 +129,13 @@ class GCMethods(object):
 		return_df.drop(['totals_a','responsefactor','intercept','max','min'],1,inplace=True)
 		
 		return return_df.set_index('key')
+
+	def _concentrations_exp(self,concentrations,standards):
+		std_keys = list(standards.keys())[1:]
+		conc_df = concentrations.reset_index()
+		return conc_df[-conc_df['key'].isin(std_keys)].set_index('key')
+
+	def _concentrations_std(self,concentrations,standards):
+		std_keys = list(standards.keys())[1:]
+		conc_df = concentrations.reset_index()
+		return conc_df[conc_df['key'].isin(std_keys)].set_index('key')
