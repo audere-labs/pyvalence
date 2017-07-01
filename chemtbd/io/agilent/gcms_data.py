@@ -9,10 +9,11 @@ from chemtbd.io.agilent.gcms_base import GcmsIoBase
 '''
 
 DATA_COLSTR = {
-    'tic': ('tic', 'f4'),   
+    'tic': ('tic', 'f4'),
     'tme': ('tme', 'f4')
 }
 COLSTR_KEY = {'data': DATA_COLSTR}
+
 
 def reader(file_path):
 
@@ -55,7 +56,7 @@ def read_wut(file_path):
         source: https://github.com/bovee/Aston/blob/master/aston/tracefile/agilent_ms.py
         TODO: verify, optimize
     '''
-    
+
     f = open(file_path, 'rb')
 
     # get number of scans to read in
@@ -117,8 +118,11 @@ def read_wut(file_path):
     f.close()
 
     vals = ((vals & 16383) * 8 ** (vals >> 14)).astype(float)
-    data = scipy.sparse.csr_matrix((vals, cols, rowst),
-                                    shape=(nscans, len(ions)), dtype=float)
+    data = scipy.sparse.csr_matrix(
+        (vals, cols, rowst),
+        shape=(nscans, len(ions)),
+        dtype=float
+    )
     ions = np.array(ions) / 20.
 
     return data, times, ions
@@ -127,7 +131,7 @@ def read_wut(file_path):
 class GcmsData(GcmsIoBase):
     ''' manages reading of Agilent DATA.MS
         and mutation of tables into single pandas df
-        
+
         Arguments:
             file_path: path to DATA.MS file
 
@@ -142,9 +146,9 @@ class GcmsData(GcmsIoBase):
     def data(self):
         ''' return tic, tme data '''
         return self['data']
-    
+
     @property
     def chromatogram(self):
         ''' test read '''
-        data, time, ions =  read_wut(self.file_path)
+        data, time, ions = read_wut(self.file_path)
         return pd.DataFrame(data=data.todense(), index=time, columns=ions)

@@ -1,4 +1,3 @@
-import numpy as np
 import pandas as pd
 
 '''
@@ -7,6 +6,7 @@ import pandas as pd
         - RESULTS.CSV
         - DATA.MS
 '''
+
 
 def clean_name(item):
     ''' return clean name from colstr item '''
@@ -35,17 +35,17 @@ def column_structure(header, keys):
     raise Exception(
         # TODO: Formalize this exception
         'expected column structure: {}, found {}'.format(
-            val.keys(), header) 
+            val.keys(), header)
     )
 
 
 class GcmsIoBase(object):
     '''
         Base Agilent gcms reader class
-        
+
         Arguments:
             col_keys: dictionary containing table structure
-        
+
         Methods:
             as_dataframe: returns input data transformed to pd DataFrame
 
@@ -58,7 +58,7 @@ class GcmsIoBase(object):
     @property
     def source_data(self):
         ''' lazily load data from file
-        ''' 
+        '''
         if not self._data:
             self._data = self._build_data()
         return self._data
@@ -74,9 +74,10 @@ class GcmsIoBase(object):
     def _build_data(self):
         ''' convert list of tables to dictionary of pandas dataframe
         '''
-        build = lambda tbl: self._as_dataframe(tbl[0], tbl[1:])
+        def build(tbl):
+            self._as_dataframe(tbl[0], tbl[1:])
         return {key: df for key, df in map(build, self._tables)}
-    
+
     def _access(self, key):
         if key not in self.source_data:
             # raise AttributeError(
