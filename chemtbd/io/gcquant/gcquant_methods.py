@@ -11,8 +11,13 @@ class GCMethods(object):
 	def _find_match(self,x, Y):
 		''' find index of argmin lambda(x,Y)
 		'''
-		score = lambda y: (x - y)**2
-		return Y.apply(score).idxmin()
+	    threshold = 0.1
+	    def score(y):
+	        u = (x - y)**2
+	        return u if u < threshold else np.nan
+
+	    return_value = Y.apply(score).idxmin()
+	    return return_value
 
 	def _rt_match(self,lib_row, rt):
 		''' find closest rt
@@ -23,9 +28,17 @@ class GCMethods(object):
 	def _matchiter(self,lib,area):
 		'''match area on rt from single df
 		'''
-		xi = lib.apply(self._rt_match, rt=area.rt.sort_values(), axis=1)
-		lib['area'] = area.area[xi].values
-		return lib.set_index('key')
+    	lib = lib.assign(area=np.nan)
+
+	    if lib.shape[0] > area.shape[0]:
+	        xi = area.apply(_rt_match, rt=lib.rt.sort_values(), axis=1)
+	        xi, yi = xi[~pd.isnull(xi)], xi[~pd.isnull(xi)].index
+	        lib.area[xi] = area.area[yi]
+	    else:  
+	        xi = lib.apply(_rt_match, rt=area.rt.sort_values(), axis=1)
+	        xi, yi = xi[~pd.isnull(xi)], xi[~pd.isnull(xi)].index
+	        lib.area[yi] = area.area[xi].values
+	    return lib.set_index('key')
 		
 	def _compiled(self,lib,area):
 		'''match area from many dataframes
