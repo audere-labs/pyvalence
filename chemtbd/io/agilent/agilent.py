@@ -3,7 +3,6 @@ import pandas as pd
 from chemtbd import utils
 from .gcms_dir import GcmsDir
 
-
 class Agilent(object):
     ''' read Agilent gcms files from provided directories
 
