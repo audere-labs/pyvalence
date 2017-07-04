@@ -39,7 +39,7 @@ def column_structure(header, keys):
     )
 
 
-class GcmsIoBase(object):
+class GcmsBuildBase(object):
     '''
         Base Agilent gcms reader class
 

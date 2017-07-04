@@ -2,7 +2,7 @@ import struct
 import numpy as np
 import scipy.sparse
 import pandas as pd
-from chemtbd.io.agilent.gcms_base import GcmsIoBase
+from .gcms_base import GcmsBuildBase
 
 '''
     io for Agilent DATA.ms file
@@ -128,7 +128,7 @@ def read_wut(file_path):
     return data, times, ions
 
 
-class GcmsData(GcmsIoBase):
+class GcmsData(GcmsBuildBase):
     ''' manages reading of Agilent DATA.MS
         and mutation of tables into single pandas df
 

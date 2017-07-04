@@ -1,9 +1,9 @@
 import re
 import csv
-from .gcms_base import GcmsIoBase
+from .gcms_base import GcmsBuildBase
 
 '''
-    io for Agilent .D RESULTS.CSV file
+    build for Agilent .D RESULTS.CSV file
 '''
 
 TIC_COLSTR = {
@@ -96,7 +96,7 @@ def reader(file_path):
     return scan_csv(csv.reader(open(file_path)))
 
 
-class GcmsResults(GcmsIoBase):
+class GcmsResults(GcmsBuildBase):
     ''' manages reading of Agilent RESULT.csv
         and mutation of tables into single pandas df
 
