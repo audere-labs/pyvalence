@@ -1,6 +1,5 @@
 import os
 import pandas as pd
-from chemtbd import utils
 from .gcms_dir import GcmsDir
 
 class Agilent(object):
@@ -37,25 +36,25 @@ class Agilent(object):
         return cls(dir_list)
 
     @classmethod
-    def from_list(cls, dir_list, dir_keys = None):
+    def from_list(cls, dir_list, dir_keys=None):
         ''' initialize from list of directory paths
         '''
         return cls(dir_list, dir_keys)
-    
+
     def common_stack(self, accessor, attr):
         ''' load all attr from accessor and stack in single df
         '''
         dfs = []
         for key, val in self._folders.items():
             df = getattr(val, accessor)[attr]
-            if not df is None:
+            if df is not None:
                 dfs.append(df.assign(key=key))
         return pd.concat(dfs, axis=0).set_index('key')
 
-    def __init__(self, dir_list, dir_keys = None):
+    def __init__(self, dir_list, dir_keys=None):
         if not dir_keys:
             dir_keys = [os.path.basename(path) for path in dir_list]
-        
+
         self._folders = {
             k: GcmsDir(v) for k, v in zip(dir_keys, dir_list)
         }
@@ -69,19 +68,19 @@ class Agilent(object):
         ''' get dir_keys
         '''
         return self._folders.keys()
-    
+
     @property
     def datams(self):
         ''' data.ms from all folders as stacked DataFrame
         '''
         return self._datams
-    
+
     @property
     def results_fid(self):
         ''' results.csv fid data from all folders as stacked DataFrame
         '''
         return self._results_fid
-    
+
     @property
     def results_lib(self):
         ''' results.csv lib data from all folders as stacked DataFrame
@@ -93,4 +92,3 @@ class Agilent(object):
         ''' results.csv tic data from all folders as stacked DataFrame
         '''
         return self._results_tic
-

@@ -21,7 +21,7 @@ FILE_STR = {
 class GcmsDir(object):
     ''' read Agilent gcms files from provided directory
 
-        Arguments: 
+        Arguments:
             dir_path: directory to agilent gcms files
 
         Attributes:

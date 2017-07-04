@@ -1,7 +1,5 @@
 import re
 import csv
-import numpy as np
-import pandas as pd
 from .gcms_base import GcmsIoBase
 
 '''
@@ -28,12 +26,12 @@ LIB_COLSTR = {
     'RT': ('rt', 'f4'),
     'Area Pct': ('pct_area', 'f4'),
     'Library/ID': ('library_id', 'O'),
-    'Ref': ('ref', 'i4' ),
+    'Ref': ('ref', 'i4'),
     'CAS': ('cas', 'O'),
     'Qual': ('qual', 'i4'),
 }
 
-FID_COLSTR = { 
+FID_COLSTR = {
     'Header=': ('header=', 'O'),
     'Peak': ('peak', 'i4'),
     'R.T.': ('rt', 'f4'),
@@ -82,7 +80,7 @@ def reader(file_path):
     def scan_csv(gen):
         ''' split csv generator into meta information
             and list of individual tables of tokens
-        '''    
+        '''
         meta, tables = [], []
         try:
             while True:
@@ -101,7 +99,7 @@ def reader(file_path):
 class GcmsResults(GcmsIoBase):
     ''' manages reading of Agilent RESULT.csv
         and mutation of tables into single pandas df
-        
+
         Arguments:
             file_path: path to RESULTS.csv file
 
