@@ -1,4 +1,4 @@
-from chemtbd import utils
+from valence import utils
 from .gcms_data import GcmsData
 from .gcms_results import GcmsResults
 
