@@ -1,12 +1,13 @@
+""" Build Agilent DATA.ms file
+"""
+
 import struct
 import numpy as np
 import scipy.sparse
 import pandas as pd
+
 from .gcms_base import GcmsBuildBase
 
-'''
-    io for Agilent DATA.ms file
-'''
 
 DATA_COLSTR = {
     'tic': ('tic', 'f4'),
@@ -18,10 +19,10 @@ COLSTR_KEY = {'data': DATA_COLSTR}
 def reader(file_path):
 
     def total_trace(file_path):
-        '''
-            source: https://github.com/bovee/Aston/blob/master/aston/tracefile/agilent_ms.py
+        """ source: https://github.com/bovee/Aston/blob/master/\
+                    aston/tracefile/agilent_ms.py
             TODO: verify, optimize
-        '''
+        """
 
         f = open(file_path, 'rb')
 
@@ -52,10 +53,10 @@ def reader(file_path):
 
 
 def read_wut(file_path):
-    '''
-        source: https://github.com/bovee/Aston/blob/master/aston/tracefile/agilent_ms.py
+    """ source: https://github.com/bovee/Aston/blob/master/\
+        aston/tracefile/agilent_ms.py
         TODO: verify, optimize
-    '''
+    """
 
     f = open(file_path, 'rb')
 
@@ -129,7 +130,7 @@ def read_wut(file_path):
 
 
 class GcmsData(GcmsBuildBase):
-    ''' manages reading of Agilent DATA.MS
+    """ manages reading of Agilent DATA.MS
         and mutation of tables into single pandas df
 
         Arguments:
@@ -137,7 +138,7 @@ class GcmsData(GcmsBuildBase):
 
         Attributes:
             data: tic, tme arrays as single DataFrame
-    '''
+    """
     def __init__(self, file_path):
         self.file_path = file_path
         super().__init__(COLSTR_KEY, reader, file_path)

@@ -1,3 +1,6 @@
+""" Read Agilent GCMS directory
+"""
+
 from valence import utils
 from .gcms_data import GcmsData
 from .gcms_results import GcmsResults
@@ -19,7 +22,7 @@ FILE_STR = {
 
 
 class GcmsDir(object):
-    ''' read Agilent gcms files from provided directory
+    """ read Agilent gcms files from provided directory
 
         Arguments:
             dir_path: directory to agilent gcms files
@@ -27,7 +30,7 @@ class GcmsDir(object):
         Attributes:
             data: data extracted from data.ms as pd DataFrame
             results: data extracted from results.csv as pd DataFrame
-    '''
+    """
     def __init__(self, dir_path, file_str=FILE_STR):
         self.dir_path = dir_path
         self.file_str = file_str
@@ -35,8 +38,8 @@ class GcmsDir(object):
         self._data = {fn.lower(): None for fn in self.files}
 
     def _data_cache(self, key):
-        ''' load or return data associated with file key
-        '''
+        """ load or return data associated with file key
+        """
         # TODO: organize / refactor exceptions
         if key not in self._data:
             raise KeyError(
@@ -54,12 +57,12 @@ class GcmsDir(object):
 
     @property
     def data(self):
-        ''' return data from data.ms
-        '''
+        """ return data from data.ms
+        """
         return self._data_cache('data.ms')
 
     @property
     def results(self):
-        ''' return data from results.csv
-        '''
+        """ return data from results.csv
+        """
         return self._data_cache('results.csv')

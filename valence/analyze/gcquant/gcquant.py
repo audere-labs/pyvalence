@@ -1,13 +1,14 @@
-import os
-import numpy as np
-import pandas as pd
+"""
+"""
+
 from .gcquant_methods import GCMethods
 
 gcm = GCMethods()
 
+
 class GCQuant(object):
-    ''' quantifies the concentrations based on calibration curves using dataframes
-        generated from Agilent
+    """ quantifies the concentrations based on calibration curves using
+        dataframes generated from Agilent
 
         Constructors:
             align: aligns lib and tic/fid on r.t.
@@ -18,15 +19,23 @@ class GCQuant(object):
             results_fid: fid table from results.csv files as DataFrame
             resutls_lib: lib table from results.csv files as DataFrame
             results_tic: tic table from result.csv files as DataFrame
-    '''
+    """
 
-    def __init__(self, lib, area,standards):
+    def __init__(self, lib, area, standards):
 
-        self._compiled = gcm._compiled(lib,area)
-        self._stdcurves = gcm._stdcurves(self._compiled,standards)
-        self._concentrations = gcm._concentrations(self.compiled,self._stdcurves)
-        self._concentrations_exp = gcm._concentrations_exp(self._concentrations,standards)
-        self._concentrations_std = gcm._concentrations_std(self._concentrations,standards)
+        self._compiled = gcm._compiled(lib, area)
+        self._stdcurves = gcm._stdcurves(self._compiled, standards)
+        self._concentrations = gcm._concentrations(
+            self.compiled, self._stdcurves
+        )
+        self._concentrations_exp = gcm._concentrations_exp(
+            self._concentrations,
+            standards
+        )
+        self._concentrations_std = gcm._concentrations_std(
+            self._concentrations, 
+            standards
+        )
         self._plots = []
 
     @property
@@ -37,15 +46,15 @@ class GCQuant(object):
     def stdcurves(self):
         return self._stdcurves
 
-    @property 
+    @property
     def concentrations(self):
         return self._concentrations
 
-    @property 
+    @property
     def concentrations_exp(self):
-        return self._concentrations_exp   
+        return self._concentrations_exp
 
-    @property 
+    @property
     def concentrations_std(self):
         return self._concentrations_std
 

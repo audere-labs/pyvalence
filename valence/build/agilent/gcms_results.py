@@ -1,10 +1,11 @@
+""" Build for Agilent .D RESULTS.CSV file
+"""
+
 import re
 import csv
+
 from .gcms_base import GcmsBuildBase
 
-'''
-    build for Agilent .D RESULTS.CSV file
-'''
 
 TIC_COLSTR = {
     'Header=': ('header=', 'O'),
@@ -48,23 +49,24 @@ COLSTR_KEY = {'tic': TIC_COLSTR, 'lib': LIB_COLSTR, 'fid': FID_COLSTR}
 
 
 def reader(file_path):
-    '''
-        read Agilent RESULTS.csv into list of lists
+    """ read Agilent RESULTS.csv into list of lists
         where each list item is the lines representing
         a tic, fid, or lib table
-    '''
+    """
     def istablerow(line):
-        ''' return true if line is table row '''
+        """ return true if line is table row
+        """
         return re.match('\d+=', line)
 
     def isheader(line):
-        ''' return true if line is header '''
+        """ return true if line is header
+        """
         return line[0] == 'Header='
 
     def seek_rows(header, gen):
-        ''' gen is at position after header seek until
+        """ gen is at position after header seek until
             no more table rows or stopiter exception
-        '''
+        """
         table = [header]
         try:
             while True:
@@ -78,9 +80,9 @@ def reader(file_path):
             return line, table
 
     def scan_csv(gen):
-        ''' split csv generator into meta information
+        """ split csv generator into meta information
             and list of individual tables of tokens
-        '''
+        """
         meta, tables = [], []
         try:
             while True:
@@ -97,7 +99,7 @@ def reader(file_path):
 
 
 class GcmsResults(GcmsBuildBase):
-    ''' manages reading of Agilent RESULT.csv
+    """ manages reading of Agilent RESULT.csv
         and mutation of tables into single pandas df
 
         Arguments:
@@ -107,7 +109,7 @@ class GcmsResults(GcmsBuildBase):
             tic: tic data as DataFrame
             lib: lib data as DataFrame
             fid: fid data as DataFrame
-    '''
+    """
     def __init__(self, file_path):
         super().__init__(COLSTR_KEY, reader, file_path)
 
