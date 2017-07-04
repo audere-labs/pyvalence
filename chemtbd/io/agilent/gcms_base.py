@@ -75,7 +75,7 @@ class GcmsIoBase(object):
         ''' convert list of tables to dictionary of pandas dataframe
         '''
         def build(tbl):
-            self._as_dataframe(tbl[0], tbl[1:])
+            return self._as_dataframe(tbl[0], tbl[1:])
         return {key: df for key, df in map(build, self._tables)}
 
     def _access(self, key):
