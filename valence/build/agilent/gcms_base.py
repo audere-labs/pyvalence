@@ -1,9 +1,9 @@
-""" Common build functionality for Agilent .D table files
+""" Common build functionality for the Agilent .D files
+    RESULTS.CSV, and DATA.MS
 
-        - RESULTS.CSV
-        - DATA.MS
+    Todo:
+        Establish robust exception handling
 """
-
 import pandas as pd
 
 
@@ -34,21 +34,17 @@ def column_structure(header, keys):
         if set(header) == set(val.keys()):
             return key, val
     raise Exception(
-        # TODO: Formalize this exception
         'expected column structure: {}, found {}'.format(
             val.keys(), header)
     )
 
 
 class GcmsBuildBase(object):
-    """ Base Agilent gcms reader class
+    """ Base Agilent GCMS reader class
 
-        Arguments:
+        Args:
             col_keys: dictionary containing table structure
-
-        Methods:
-            as_dataframe: returns input data transformed to pd DataFrame
-
+            reader: function for reading file
     """
     def __init__(self, col_keys, reader, file_path):
         self.col_keys = col_keys
@@ -79,6 +75,9 @@ class GcmsBuildBase(object):
         return {key: df for key, df in map(build, self._tables)}
 
     def _access(self, key):
+        """ provide access to key in data with appropriate
+            exception handling
+        """
         if key not in self.source_data:
             # raise AttributeError(
             #     '{} has no attribute {}'.format(type(self).__name__, key)
@@ -87,5 +86,4 @@ class GcmsBuildBase(object):
         return self._data[key]
 
     def __getitem__(self, key):
-        ''' overload [] '''
         return self._access(key)

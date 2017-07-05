@@ -1,15 +1,18 @@
-""" Read Agilent GCMS directory
-"""
+""" Manages reading all files in Agilent GCMS .D directory
 
+    Todo:
+        establish robust exception handling
+"""
 from valence import utils
-from .gcms_data import GcmsData
+from .gcms_datams import GcmsDataMs
 from .gcms_results import GcmsResults
+
 
 FILE_STR = {
     'acqmeth.txt': None,
     'audit.txt': None,
     'cnorm.ini': None,
-    'data.ms': GcmsData,
+    'data.ms': GcmsDataMs,
     'fames-ha.res': None,
     'fames-ha.xls': None,
     'fileinfo.txt': None,
@@ -22,14 +25,14 @@ FILE_STR = {
 
 
 class GcmsDir(object):
-    """ read Agilent gcms files from provided directory
+    """ Read Agilent GCMS files from .D directory
 
         Arguments:
-            dir_path: directory to agilent gcms files
+            dir_path (str): directory to agilent GCMS files
 
         Attributes:
-            data: data extracted from data.ms as pd DataFrame
-            results: data extracted from results.csv as pd DataFrame
+            data (DataFrame): data extracted from data.ms
+            results (DataFrame): data extracted from results.csv
     """
     def __init__(self, dir_path, file_str=FILE_STR):
         self.dir_path = dir_path
@@ -38,9 +41,8 @@ class GcmsDir(object):
         self._data = {fn.lower(): None for fn in self.files}
 
     def _data_cache(self, key):
-        """ load or return data associated with file key
+        """ load and return data associated with file key
         """
-        # TODO: organize / refactor exceptions
         if key not in self._data:
             raise KeyError(
                 '{} not in {}'.format(key, self.dir_path))
@@ -57,12 +59,12 @@ class GcmsDir(object):
 
     @property
     def data(self):
-        """ return data from data.ms
+        """ return data from DATA.MS
         """
         return self._data_cache('data.ms')
 
     @property
     def results(self):
-        """ return data from results.csv
+        """ return data from RESULTS.CSV
         """
         return self._data_cache('results.csv')

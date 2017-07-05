@@ -59,7 +59,7 @@ class GCMethods(object):
 
     # def _match_cal_conc(matcheddf, standards):
     #     """ takes a dataframe which contains species matched to an area
-    #         (matched_df) and a calibration concentration dataframe and 
+    #         (matched_df) and a calibration concentration dataframe and
     #         matches these two based on library_id
     #     """
     #     standards_melted = pd.melt(standards, id_vars=['library_id'],
@@ -140,7 +140,7 @@ class GCMethods(object):
             B = x['intercept']
             conc = aX + B if aX + B > 0 else np.nan
             return conc
-    
+
         # calculate concentration of species
         compiled = compiled.reset_index()
         return_df = pd.merge(compiled, stdcurves, on='library_id', how='outer')

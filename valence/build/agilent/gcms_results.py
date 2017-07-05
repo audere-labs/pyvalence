@@ -1,6 +1,8 @@
-""" Build for Agilent .D RESULTS.CSV file
-"""
+""" Extract data from Agilent .D RESULTS.CSV file
 
+    Todo:
+        
+"""
 import re
 import csv
 

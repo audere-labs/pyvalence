@@ -1,2 +1,2 @@
-from .agilent.agilent import Agilent
-from .agilent.gcms_data import GcmsData
+from .agilent.agilent import AgilentGcms
+from .agilent.gcms_datams import GcmsDataMs

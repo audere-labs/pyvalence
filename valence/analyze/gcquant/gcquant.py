@@ -58,4 +58,3 @@ class GCQuant(object):
     def concentrations_std(self):
         return self._concentrations_std
 
-

@@ -1,3 +1,5 @@
+""" Collection of methods that don't yet have a home
+"""
 import os
 
 
@@ -12,7 +14,7 @@ def diriter(root_dir):
 def commafix(root_dir):
 
     def clean(line):
-        """ remove trailing commas from line 
+        """ remove trailing commas from line
         """
         return [line[:-1].rstrip(',')
                 for line in lines]
@@ -22,7 +24,7 @@ def commafix(root_dir):
             lines = open(fp, 'r').readlines()
             content = '\n'.join(clean(lines))
             open(fp, 'w').write(content)
-           
+
 
 if __name__ == '__main__':
     commafix('../data/test3')
