@@ -1,7 +1,4 @@
 """ Extract data from Agilent .D RESULTS.CSV file
-
-    Todo:
-        
 """
 import re
 import csv
@@ -51,9 +48,13 @@ COLSTR_KEY = {'tic': TIC_COLSTR, 'lib': LIB_COLSTR, 'fid': FID_COLSTR}
 
 
 def reader(file_path):
-    """ read Agilent RESULTS.csv into list of lists
-        where each list item is the lines representing
-        a tic, fid, or lib table
+    """ read Agilent `RESULTS.CSV` into list of lists where each list item
+        is the lines representing a tic, fid, or lib table
+
+        Parameters
+        ----------
+        file_path : str
+            Path to Agilent `.D` `RESULTS.CSV`.
     """
     def istablerow(line):
         """ return true if line is table row
@@ -101,11 +102,11 @@ def reader(file_path):
 
 
 class GcmsResults(GcmsBuildBase):
-    """ manages reading of Agilent RESULT.csv
+    """ manages reading of Agilent RESULT.CSV
         and mutation of tables into single pandas df
 
         Arguments:
-            file_path: path to RESULTS.csv file
+            file_path: path to RESULTS.CSV file
 
         Attributes:
             tic: tic data as DataFrame

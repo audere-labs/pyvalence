@@ -1,7 +1,4 @@
 """ Manages reading all files in Agilent GCMS .D directory
-
-    Todo:
-        establish robust exception handling
 """
 from valence import utils
 from .gcms_datams import GcmsDataMs
