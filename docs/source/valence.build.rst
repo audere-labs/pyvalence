@@ -1,12 +1,17 @@
 valence\.build package
 ======================
 
-Subpackages
------------
+Submodules
+----------
 
-.. toctree::
+valence\.build\.agilentgcms module
+----------------------------------
 
-    valence.build.agilent
+.. automodule:: valence.build.agilentgcms
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 
 Module contents
 ---------------

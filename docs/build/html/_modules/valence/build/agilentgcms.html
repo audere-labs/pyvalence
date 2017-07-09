@@ -1,0 +1,785 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>valence.build.agilentgcms &mdash; valence 0.0.1 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../../../genindex.html"/>
+        <link rel="search" title="Search" href="../../../search.html"/>
+    <link rel="top" title="valence 0.0.1 documentation" href="../../../index.html"/>
+        <link rel="up" title="Module code" href="../../index.html"/> 
+
+  
+  <script src="../../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> valence
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.0.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <!-- Local TOC -->
+              <div class="local-toc"></div>
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">valence</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>valence.build.agilentgcms</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for valence.build.agilentgcms</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot; Read GCMS files produced by Agilent</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">import</span> <span class="nn">csv</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">struct</span>
+<span class="kn">import</span> <span class="nn">scipy.sparse</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+
+
+<div class="viewcode-block" id="AgilentGcmsTableBase"><a class="viewcode-back" href="../../../valence.build.html#valence.build.agilentgcms.AgilentGcmsTableBase">[docs]</a><span class="k">class</span> <span class="nc">AgilentGcmsTableBase</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Base class for Agilent GCMS builders. It should not be</span>
+<span class="sd">        instantiated directly.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">_clean_name</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; return clean name from colstr item.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">item</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">_np_type</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; return numpy type from colstr item.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">item</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">_pd_columns</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">header</span><span class="p">,</span> <span class="n">colstr</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; return column headers from colstr item.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">[</span><span class="bp">cls</span><span class="o">.</span><span class="n">_clean_name</span><span class="p">(</span><span class="n">colstr</span><span class="p">[</span><span class="n">col</span><span class="p">])</span> <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">header</span><span class="p">]</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">_column_structure</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">header</span><span class="p">,</span> <span class="n">keys</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; match table colstr with header read from file</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">keys</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="nb">set</span><span class="p">(</span><span class="n">header</span><span class="p">)</span> <span class="o">==</span> <span class="nb">set</span><span class="p">(</span><span class="n">val</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
+                <span class="k">return</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span>
+            <span class="s1">&#39;expected column structure: </span><span class="si">{}</span><span class="s1">, found </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="n">val</span><span class="o">.</span><span class="n">keys</span><span class="p">(),</span> <span class="n">header</span><span class="p">)</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">col_keys</span><span class="p">,</span> <span class="n">reader</span><span class="p">,</span> <span class="n">file_path</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;AgilentGcmsTableBase&#39;</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;This class is not intended&#39;</span>
+                             <span class="s1">&#39;to be instantiated directly.&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">col_keys</span> <span class="o">=</span> <span class="n">col_keys</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_meta</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tables</span> <span class="o">=</span> <span class="n">reader</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_data</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="k">def</span> <span class="nf">_as_dataframe</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">header</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; transform results of reader function to pandas.DataFrame</span>
+<span class="sd">            with appropriate column names and data types</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">key</span><span class="p">,</span> <span class="n">colstr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_column_structure</span><span class="p">(</span><span class="n">header</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">col_keys</span><span class="p">)</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_pd_columns</span><span class="p">(</span><span class="n">header</span><span class="p">,</span> <span class="n">colstr</span><span class="p">))</span>
+                <span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">to_numeric</span><span class="p">,</span> <span class="n">errors</span><span class="o">=</span><span class="s1">&#39;ignore&#39;</span><span class="p">))</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">df</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_build_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; convert list of tables to dictionary of pandas dataframe</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">def</span> <span class="nf">build</span><span class="p">(</span><span class="n">tbl</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_as_dataframe</span><span class="p">(</span><span class="n">tbl</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">tbl</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span>
+        <span class="k">return</span> <span class="p">{</span><span class="n">key</span><span class="p">:</span> <span class="n">df</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">df</span> <span class="ow">in</span> <span class="nb">map</span><span class="p">(</span><span class="n">build</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tables</span><span class="p">)}</span>
+
+    <span class="k">def</span> <span class="nf">_access</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; provide access to key in data with appropriate</span>
+<span class="sd">            exception handling</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build_data</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; provide access to key in data</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_access</span><span class="p">(</span><span class="n">key</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="AgilentGcmsResults"><a class="viewcode-back" href="../../../valence.build.html#valence.build.agilentgcms.AgilentGcmsResults">[docs]</a><span class="k">class</span> <span class="nc">AgilentGcmsResults</span><span class="p">(</span><span class="n">AgilentGcmsTableBase</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Manages reading of Agilent RESULT.CSV</span>
+<span class="sd">        and mutation of tables into single pandas df</span>
+
+<span class="sd">        Arguments:</span>
+<span class="sd">            file_path: path to RESULTS.CSV file</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">__tic_colstr</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;Header=&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;header=&#39;</span><span class="p">,</span> <span class="s1">&#39;O&#39;</span><span class="p">),</span>
+        <span class="s1">&#39;Peak&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;peak&#39;</span><span class="p">,</span> <span class="s1">&#39;i4&#39;</span><span class="p">),</span>
+        <span class="s1">&#39;R.T.&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;rt&#39;</span><span class="p">,</span> <span class="s1">&#39;f4&#39;</span><span class="p">),</span>
+        <span class="s1">&#39;First&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;first&#39;</span><span class="p">,</span> <span class="s1">&#39;i4&#39;</span><span class="p">),</span>
+        <span class="s1">&#39;Max&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;max&#39;</span><span class="p">,</span> <span class="s1">&#39;i4&#39;</span><span class="p">),</span>
+        <span class="s1">&#39;Last&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;last&#39;</span><span class="p">,</span> <span class="s1">&#39;i4&#39;</span><span class="p">),</span>
+        <span class="s1">&#39;PK  TY&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;pk_ty&#39;</span><span class="p">,</span> <span class="s1">&#39;O&#39;</span><span class="p">),</span>
+        <span class="s1">&#39;Height&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;height&#39;</span><span class="p">,</span> <span class="s1">&#39;i4&#39;</span><span class="p">),</span>
+        <span class="s1">&#39;Area&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;area&#39;</span><span class="p">,</span> <span class="s1">&#39;i4&#39;</span><span class="p">),</span>
+        <span class="s1">&#39;Pct Max&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;pct_max&#39;</span><span class="p">,</span> <span class="s1">&#39;f4&#39;</span><span class="p">),</span>
+        <span class="s1">&#39;Pct Total&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;pct_total&#39;</span><span class="p">,</span> <span class="s1">&#39;f4&#39;</span><span class="p">)</span>
+    <span class="p">}</span>
+
+    <span class="n">__lib_colstr</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;Header=&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;header=&#39;</span><span class="p">,</span> <span class="s1">&#39;O&#39;</span><span class="p">),</span>
+        <span class="s1">&#39;PK&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;pk&#39;</span><span class="p">,</span> <span class="s1">&#39;i4&#39;</span><span class="p">),</span>
+        <span class="s1">&#39;RT&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;rt&#39;</span><span class="p">,</span> <span class="s1">&#39;f4&#39;</span><span class="p">),</span>
+        <span class="s1">&#39;Area Pct&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;pct_area&#39;</span><span class="p">,</span> <span class="s1">&#39;f4&#39;</span><span class="p">),</span>
+        <span class="s1">&#39;Library/ID&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;library_id&#39;</span><span class="p">,</span> <span class="s1">&#39;O&#39;</span><span class="p">),</span>
+        <span class="s1">&#39;Ref&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;ref&#39;</span><span class="p">,</span> <span class="s1">&#39;i4&#39;</span><span class="p">),</span>
+        <span class="s1">&#39;CAS&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;cas&#39;</span><span class="p">,</span> <span class="s1">&#39;O&#39;</span><span class="p">),</span>
+        <span class="s1">&#39;Qual&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;qual&#39;</span><span class="p">,</span> <span class="s1">&#39;i4&#39;</span><span class="p">),</span>
+    <span class="p">}</span>
+
+    <span class="n">__fid_colstr</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;Header=&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;header=&#39;</span><span class="p">,</span> <span class="s1">&#39;O&#39;</span><span class="p">),</span>
+        <span class="s1">&#39;Peak&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;peak&#39;</span><span class="p">,</span> <span class="s1">&#39;i4&#39;</span><span class="p">),</span>
+        <span class="s1">&#39;R.T.&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;rt&#39;</span><span class="p">,</span> <span class="s1">&#39;f4&#39;</span><span class="p">),</span>
+        <span class="s1">&#39;Start&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;first&#39;</span><span class="p">,</span> <span class="s1">&#39;i4&#39;</span><span class="p">),</span>
+        <span class="s1">&#39;End&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;end&#39;</span><span class="p">,</span> <span class="s1">&#39;i4&#39;</span><span class="p">),</span>
+        <span class="s1">&#39;PK TY&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;pk_ty&#39;</span><span class="p">,</span> <span class="s1">&#39;0&#39;</span><span class="p">),</span>
+        <span class="s1">&#39;Height&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;height&#39;</span><span class="p">,</span> <span class="s1">&#39;i4&#39;</span><span class="p">),</span>
+        <span class="s1">&#39;Area&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;area&#39;</span><span class="p">,</span> <span class="s1">&#39;i4&#39;</span><span class="p">),</span>
+        <span class="s1">&#39;Pct Max&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;pct_max&#39;</span><span class="p">,</span> <span class="s1">&#39;f4&#39;</span><span class="p">),</span>
+        <span class="s1">&#39;Pct Total&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;pct_total&#39;</span><span class="p">,</span> <span class="s1">&#39;f4&#39;</span><span class="p">)</span>
+    <span class="p">}</span>
+
+    <span class="n">__colstr_key</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;tic&#39;</span><span class="p">:</span> <span class="n">__tic_colstr</span><span class="p">,</span>
+        <span class="s1">&#39;lib&#39;</span><span class="p">:</span> <span class="n">__lib_colstr</span><span class="p">,</span>
+        <span class="s1">&#39;fid&#39;</span><span class="p">:</span> <span class="n">__fid_colstr</span>
+    <span class="p">}</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_results_reader</span><span class="p">(</span><span class="n">file_path</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; read Agilent RESULTS.CSV into list of lists where each list item</span>
+<span class="sd">            is the lines representing a tic, fid, or lib table</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">def</span> <span class="nf">istablerow</span><span class="p">(</span><span class="n">line</span><span class="p">):</span>
+            <span class="sd">&quot;&quot;&quot; return true if line is table row</span>
+<span class="sd">            &quot;&quot;&quot;</span>
+            <span class="k">return</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="s1">&#39;\d+=&#39;</span><span class="p">,</span> <span class="n">line</span><span class="p">)</span>
+
+        <span class="k">def</span> <span class="nf">isheader</span><span class="p">(</span><span class="n">line</span><span class="p">):</span>
+            <span class="sd">&quot;&quot;&quot; return true if line is header</span>
+<span class="sd">            &quot;&quot;&quot;</span>
+            <span class="k">return</span> <span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;Header=&#39;</span>
+
+        <span class="k">def</span> <span class="nf">seek_rows</span><span class="p">(</span><span class="n">header</span><span class="p">,</span> <span class="n">gen</span><span class="p">):</span>
+            <span class="sd">&quot;&quot;&quot; gen is at position after header seek until</span>
+<span class="sd">                no more table rows or stopiter exception</span>
+<span class="sd">            &quot;&quot;&quot;</span>
+            <span class="n">table</span> <span class="o">=</span> <span class="p">[</span><span class="n">header</span><span class="p">]</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+                    <span class="n">line</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">gen</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">istablerow</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+                        <span class="k">break</span>
+                    <span class="n">table</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">StopIteration</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="n">line</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="k">finally</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">line</span><span class="p">,</span> <span class="n">table</span>
+
+        <span class="k">def</span> <span class="nf">scan_csv</span><span class="p">(</span><span class="n">gen</span><span class="p">):</span>
+            <span class="sd">&quot;&quot;&quot; split csv generator into meta information</span>
+<span class="sd">                and list of individual tables of tokens</span>
+<span class="sd">            &quot;&quot;&quot;</span>
+            <span class="n">meta</span><span class="p">,</span> <span class="n">tables</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[]</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+                    <span class="n">line</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">gen</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">isheader</span><span class="p">(</span><span class="n">line</span><span class="p">):</span>
+                        <span class="n">line</span><span class="p">,</span> <span class="n">table</span> <span class="o">=</span> <span class="n">seek_rows</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="n">gen</span><span class="p">)</span>
+                        <span class="n">tables</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">table</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">line</span><span class="p">:</span>
+                        <span class="n">meta</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">StopIteration</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">meta</span><span class="p">,</span> <span class="n">tables</span>
+
+        <span class="k">return</span> <span class="n">scan_csv</span><span class="p">(</span><span class="n">csv</span><span class="o">.</span><span class="n">reader</span><span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="n">file_path</span><span class="p">)))</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_path</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__colstr_key</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_results_reader</span><span class="p">,</span> <span class="n">file_path</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">tic</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; return tic table</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;tic&#39;</span><span class="p">]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">lib</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; return lib table</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;lib&#39;</span><span class="p">]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">fid</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; return fid table</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;fid&#39;</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="AgilentGcmsDataMs"><a class="viewcode-back" href="../../../valence.build.html#valence.build.agilentgcms.AgilentGcmsDataMs">[docs]</a><span class="k">class</span> <span class="nc">AgilentGcmsDataMs</span><span class="p">(</span><span class="n">AgilentGcmsTableBase</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Manages reading of Agilent DATA.MS file</span>
+<span class="sd">        and stacking into single pandas DataFrame</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        file_path : str</span>
+<span class="sd">            Path to ``DATA.MS`` file.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">__data_colstr</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;tic&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;tic&#39;</span><span class="p">,</span> <span class="s1">&#39;f4&#39;</span><span class="p">),</span>
+        <span class="s1">&#39;tme&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;tme&#39;</span><span class="p">,</span> <span class="s1">&#39;f4&#39;</span><span class="p">)</span>
+    <span class="p">}</span>
+    <span class="n">__colstr_key</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;data&#39;</span><span class="p">:</span> <span class="n">__data_colstr</span><span class="p">}</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_read_chromatogram</span><span class="p">(</span><span class="n">file_path</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Extract tic and tme data from DATA.MS file</span>
+
+<span class="sd">            Args:</span>
+<span class="sd">                file_path (str): path to DATA.MS file</span>
+
+<span class="sd">            Returns:</span>
+<span class="sd">                ([meta], [data]): ``meta`` is the metadata lines</span>
+<span class="sd">                in the DATA.MS file.  ``data`` is the tic and tme lines</span>
+<span class="sd">                from the DATA.MS file as [tic, tme].</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span>
+
+        <span class="n">f</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mh">0x5</span><span class="p">)</span>             <span class="c1"># get number of scans to read in</span>
+        <span class="k">if</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span> <span class="o">==</span> <span class="s1">&#39;GC&#39;</span><span class="p">:</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mh">0x142</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mh">0x118</span><span class="p">)</span>
+        <span class="n">nscans</span> <span class="o">=</span> <span class="n">struct</span><span class="o">.</span><span class="n">unpack</span><span class="p">(</span><span class="s1">&#39;&gt;H&#39;</span><span class="p">,</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">2</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="n">f</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mh">0x10A</span><span class="p">)</span>            <span class="c1"># find the starting location of the data</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">struct</span><span class="o">.</span><span class="n">unpack</span><span class="p">(</span><span class="s1">&#39;&gt;H&#39;</span><span class="p">,</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">2</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="mi">2</span><span class="p">)</span>
+
+        <span class="n">tme</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">nscans</span><span class="p">)</span>
+        <span class="n">tic</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">nscans</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nscans</span><span class="p">):</span>
+            <span class="n">npos</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">tell</span><span class="p">()</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">struct</span><span class="o">.</span><span class="n">unpack</span><span class="p">(</span><span class="s1">&#39;&gt;H&#39;</span><span class="p">,</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">2</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">tme</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">struct</span><span class="o">.</span><span class="n">unpack</span><span class="p">(</span><span class="s1">&#39;&gt;I&#39;</span><span class="p">,</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">4</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span> <span class="o">/</span> <span class="mf">60000.</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="n">npos</span> <span class="o">-</span> <span class="mi">4</span><span class="p">)</span>
+            <span class="n">tic</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">struct</span><span class="o">.</span><span class="n">unpack</span><span class="p">(</span><span class="s1">&#39;&gt;I&#39;</span><span class="p">,</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">4</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="n">npos</span><span class="p">)</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="n">jj</span> <span class="o">=</span> <span class="p">[[</span><span class="s1">&#39;tic&#39;</span><span class="p">,</span> <span class="s1">&#39;tme&#39;</span><span class="p">]]</span> <span class="o">+</span> <span class="p">[</span><span class="nb">list</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">tic</span><span class="p">,</span> <span class="n">tme</span><span class="p">))]</span>
+        <span class="k">return</span> <span class="p">[],</span> <span class="p">[</span><span class="n">jj</span><span class="p">]</span>
+    
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_read_spectra</span><span class="p">(</span><span class="n">file_path</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Extract chromatogram data from DATA.MS file</span>
+
+<span class="sd">            Args:</span>
+<span class="sd">                file_path (str): path to DATA.MS file</span>
+
+<span class="sd">            Returns:</span>
+<span class="sd">                pandas DataFrame with chromatograph ions as columns,</span>
+<span class="sd">                time as index, measurements as values</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span>
+
+        <span class="n">f</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mh">0x5</span><span class="p">)</span>             <span class="c1"># get number of scans to read in</span>
+        <span class="k">if</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span> <span class="o">==</span> <span class="s1">&#39;GC&#39;</span><span class="p">:</span>   <span class="c1"># GC and LC chemstation store in different places</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mh">0x142</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mh">0x118</span><span class="p">)</span>
+        <span class="n">nscans</span> <span class="o">=</span> <span class="n">struct</span><span class="o">.</span><span class="n">unpack</span><span class="p">(</span><span class="s1">&#39;&gt;H&#39;</span><span class="p">,</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">2</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="n">f</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mh">0x10A</span><span class="p">)</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">struct</span><span class="o">.</span><span class="n">unpack</span><span class="p">(</span><span class="s1">&#39;&gt;H&#39;</span><span class="p">,</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">2</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="n">dstart</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">tell</span><span class="p">()</span>
+
+        <span class="n">tot_pts</span> <span class="o">=</span> <span class="mi">0</span>             <span class="c1"># determine total number of measurements in file</span>
+        <span class="n">rowst</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">nscans</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
+        <span class="n">rowst</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="k">for</span> <span class="n">scn</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nscans</span><span class="p">):</span>
+            <span class="c1"># get the position of the next scan</span>
+            <span class="n">npos</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">tell</span><span class="p">()</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">struct</span><span class="o">.</span><span class="n">unpack</span><span class="p">(</span><span class="s1">&#39;&gt;H&#39;</span><span class="p">,</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">2</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
+
+            <span class="c1"># keep a running total of how many measurements</span>
+            <span class="n">tot_pts</span> <span class="o">+=</span> <span class="p">(</span><span class="n">npos</span> <span class="o">-</span> <span class="n">f</span><span class="o">.</span><span class="n">tell</span><span class="p">()</span> <span class="o">-</span> <span class="mi">26</span><span class="p">)</span> <span class="o">/</span> <span class="mi">4</span>
+            <span class="n">rowst</span><span class="p">[</span><span class="n">scn</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">tot_pts</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="n">npos</span><span class="p">)</span>        <span class="c1"># move forward</span>
+
+        <span class="c1"># go back to the beginning and load all the other data</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="n">dstart</span><span class="p">)</span>
+
+        <span class="n">ions</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">i_lkup</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">cols</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">tot_pts</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int</span><span class="p">)</span>
+        <span class="n">vals</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">tot_pts</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int</span><span class="p">)</span>
+        <span class="n">times</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">nscans</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">scn</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nscans</span><span class="p">):</span>
+            <span class="n">npos</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">tell</span><span class="p">()</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">struct</span><span class="o">.</span><span class="n">unpack</span><span class="p">(</span><span class="s1">&#39;&gt;H&#39;</span><span class="p">,</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">2</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
+
+            <span class="c1"># the sampling rate is evidentally 60 kHz on all Agilent&#39;s MS&#39;s</span>
+            <span class="n">times</span><span class="p">[</span><span class="n">scn</span><span class="p">]</span> <span class="o">=</span> <span class="n">struct</span><span class="o">.</span><span class="n">unpack</span><span class="p">(</span><span class="s1">&#39;&gt;I&#39;</span><span class="p">,</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">4</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span> <span class="o">/</span> <span class="mf">60000.</span>
+
+            <span class="n">f</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">tell</span><span class="p">()</span> <span class="o">+</span> <span class="mi">12</span><span class="p">)</span>
+            <span class="n">npts</span> <span class="o">=</span> <span class="n">rowst</span><span class="p">[</span><span class="n">scn</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">rowst</span><span class="p">[</span><span class="n">scn</span><span class="p">]</span>
+            <span class="n">mzs</span> <span class="o">=</span> <span class="n">struct</span><span class="o">.</span><span class="n">unpack</span><span class="p">(</span><span class="s1">&#39;&gt;&#39;</span> <span class="o">+</span> <span class="n">npts</span> <span class="o">*</span> <span class="s1">&#39;HH&#39;</span><span class="p">,</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">npts</span> <span class="o">*</span> <span class="mi">4</span><span class="p">))</span>
+
+            <span class="n">nions</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">mzs</span><span class="p">[</span><span class="mi">0</span><span class="p">::</span><span class="mi">2</span><span class="p">])</span><span class="o">.</span><span class="n">difference</span><span class="p">(</span><span class="n">i_lkup</span><span class="p">)</span>
+            <span class="n">i_lkup</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="n">ion</span><span class="p">:</span> <span class="n">i</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">ions</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">ion</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">nions</span><span class="p">)})</span>
+            <span class="n">ions</span> <span class="o">+=</span> <span class="n">nions</span>
+
+            <span class="n">cols</span><span class="p">[</span><span class="n">rowst</span><span class="p">[</span><span class="n">scn</span><span class="p">]:</span><span class="n">rowst</span><span class="p">[</span><span class="n">scn</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="n">i_lkup</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">mzs</span><span class="p">[</span><span class="mi">0</span><span class="p">::</span><span class="mi">2</span><span class="p">]]</span>
+            <span class="n">vals</span><span class="p">[</span><span class="n">rowst</span><span class="p">[</span><span class="n">scn</span><span class="p">]:</span><span class="n">rowst</span><span class="p">[</span><span class="n">scn</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]]</span> <span class="o">=</span> <span class="n">mzs</span><span class="p">[</span><span class="mi">1</span><span class="p">::</span><span class="mi">2</span><span class="p">]</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="n">npos</span><span class="p">)</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+        <span class="n">vals</span> <span class="o">=</span> <span class="p">((</span><span class="n">vals</span> <span class="o">&amp;</span> <span class="mi">16383</span><span class="p">)</span> <span class="o">*</span> <span class="mi">8</span> <span class="o">**</span> <span class="p">(</span><span class="n">vals</span> <span class="o">&gt;&gt;</span> <span class="mi">14</span><span class="p">))</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">sparse</span><span class="o">.</span><span class="n">csr_matrix</span><span class="p">(</span>
+            <span class="p">(</span><span class="n">vals</span><span class="p">,</span> <span class="n">cols</span><span class="p">,</span> <span class="n">rowst</span><span class="p">),</span>
+            <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">nscans</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">ions</span><span class="p">)),</span>
+            <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span>
+        <span class="p">)</span>
+        <span class="n">ions</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">ions</span><span class="p">)</span> <span class="o">/</span> <span class="mf">20.</span>
+        <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="o">.</span><span class="n">todense</span><span class="p">(),</span> <span class="n">index</span><span class="o">=</span><span class="n">times</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="n">ions</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_path</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">file_path</span> <span class="o">=</span> <span class="n">file_path</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__colstr_key</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_read_chromatogram</span><span class="p">,</span> <span class="n">file_path</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">chromatogram</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; tic and tme data as DataFrame</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">spectra</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; WIP: For testing chromatogram build</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_read_spectra</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">file_path</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="AgilentGcmsDir"><a class="viewcode-back" href="../../../valence.build.html#valence.build.agilentgcms.AgilentGcmsDir">[docs]</a><span class="k">class</span> <span class="nc">AgilentGcmsDir</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Read all GCMS files from Agilent .D folder.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        dir_path : str</span>
+<span class="sd">            Path to Agilent .D folder.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">__file_str</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;acqmeth.txt&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="s1">&#39;audit.txt&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="s1">&#39;cnorm.ini&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="s1">&#39;data.ms&#39;</span><span class="p">:</span> <span class="n">AgilentGcmsDataMs</span><span class="p">,</span>
+        <span class="s1">&#39;fames-ha.res&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="s1">&#39;fames-ha.xls&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="s1">&#39;fileinfo.txt&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="s1">&#39;ls_report&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="s1">&#39;percent.txt&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="s1">&#39;pre_post.ini&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="s1">&#39;qreport.txt&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="s1">&#39;results.csv&#39;</span><span class="p">:</span> <span class="n">AgilentGcmsResults</span>
+    <span class="p">}</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">_diriter</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">dir_path</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Non-public method that returns all files in Agilent .D folder.</span>
+
+<span class="sd">            Parameters</span>
+<span class="sd">            ----------</span>
+<span class="sd">            dir_path : str</span>
+<span class="sd">                Path to Agilent .D folder.</span>
+
+<span class="sd">            Returns</span>
+<span class="sd">            -------</span>
+<span class="sd">            Generator</span>
+<span class="sd">                Itarable over files in ``dir_path``.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">((</span><span class="n">f</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">f</span><span class="p">))</span>
+                <span class="k">for</span> <span class="n">root</span><span class="p">,</span> <span class="n">dirs</span><span class="p">,</span> <span class="n">files</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">walk</span><span class="p">(</span><span class="n">dir_path</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">files</span> <span class="k">if</span> <span class="n">f</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">__file_str</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dir_path</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_dir_path</span> <span class="o">=</span> <span class="n">dir_path</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_files</span> <span class="o">=</span> <span class="p">{</span><span class="n">fn</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span> <span class="n">fp</span>
+                       <span class="k">for</span> <span class="n">fn</span><span class="p">,</span> <span class="n">fp</span> <span class="ow">in</span> <span class="n">AgilentGcmsDir</span><span class="o">.</span><span class="n">_diriter</span><span class="p">(</span><span class="n">dir_path</span><span class="p">)}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_data</span> <span class="o">=</span> <span class="p">{</span><span class="n">fn</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span> <span class="kc">None</span> <span class="k">for</span> <span class="n">fn</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_files</span><span class="p">}</span>
+
+    <span class="k">def</span> <span class="nf">_key_validate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Non-public method to validate build of file in Agilent .D folder.</span>
+
+<span class="sd">            Parameters</span>
+<span class="sd">            ----------</span>
+<span class="sd">            key : str</span>
+<span class="sd">                Name of file in Agilent .D folder.</span>
+
+<span class="sd">            Raises</span>
+<span class="sd">            ------</span>
+<span class="sd">            KeyError </span>
+<span class="sd">                Raised iff ``key`` not a known Agilent .D file, or if ``key``</span>
+<span class="sd">                is a known Agilent .D file, but was not present in the</span>
+<span class="sd">                provided ``_dir_path``.</span>
+<span class="sd">            NotImplementedError</span>
+<span class="sd">                If build object associated with ``key`` is not implemented.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span>
+                <span class="s1">&#39;</span><span class="si">{}</span><span class="s1"> not in </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dir_path</span><span class="p">)</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">AgilentGcmsDir</span><span class="o">.</span><span class="n">__file_str</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span>
+                <span class="s1">&#39;</span><span class="si">{}</span><span class="s1"> not a recognized file&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">AgilentGcmsDir</span><span class="o">.</span><span class="n">__file_str</span><span class="p">[</span><span class="n">key</span><span class="p">]:</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+                <span class="s1">&#39;parser for </span><span class="si">{}</span><span class="s1"> not yet implemented&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+            <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_data_cache</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Non-public accessor for loading or getting data associated</span>
+<span class="sd">            with ``key``. Performs appropriate validation on ``key``.</span>
+
+<span class="sd">            Parameters</span>
+<span class="sd">            ----------</span>
+<span class="sd">            key : str</span>
+<span class="sd">                File key associated with data to load or get.</span>
+
+<span class="sd">            Returns</span>
+<span class="sd">            -------</span>
+<span class="sd">            DataFrame</span>
+<span class="sd">                Data loaded from file associated with ``key``.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_key_validate</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">AgilentGcmsDir</span><span class="o">.</span><span class="n">__file_str</span><span class="p">[</span><span class="n">key</span><span class="p">](</span><span class="bp">self</span><span class="o">.</span><span class="n">_files</span><span class="p">[</span><span class="n">key</span><span class="p">])</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; obj: AgilentGcmsDataMs built from DATA.MS file in</span>
+<span class="sd">            Agilent .D folder</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data_cache</span><span class="p">(</span><span class="s1">&#39;data.ms&#39;</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">results</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; obj: AgilentGcmsResult built from RESULTS.CSV file in</span>
+<span class="sd">            Agilent .D folder.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data_cache</span><span class="p">(</span><span class="s1">&#39;results.csv&#39;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="AgilentGcms"><a class="viewcode-back" href="../../../valence.build.html#valence.build.agilentgcms.AgilentGcms">[docs]</a><span class="k">class</span> <span class="nc">AgilentGcms</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Read GCMS files from one or more Agilent .D folders into a collection</span>
+<span class="sd">        of pandas.DataFrame.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        dir_list : list(str)</span>
+<span class="sd">            Paths to Agilent .D folders.</span>
+<span class="sd">        dir_keys : list(str)</span>
+<span class="sd">            Optional. Provide custom names for the .D folders. If omitted,</span>
+<span class="sd">            the folders&#39; names are used.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+<div class="viewcode-block" id="AgilentGcms.from_dir"><a class="viewcode-back" href="../../../valence.build.html#valence.build.agilentgcms.AgilentGcms.from_dir">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_dir</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">agilent_dir</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Initialize AgilentGcms from single Agilent .D folder.</span>
+
+<span class="sd">            Parameters</span>
+<span class="sd">            ----------</span>
+<span class="sd">            agilent_dir : str</span>
+<span class="sd">                Path to Agilent .D folder.</span>
+
+<span class="sd">            Returns</span>
+<span class="sd">            -------</span>
+<span class="sd">            obj</span>
+<span class="sd">                AgilentGcms object constructed from single</span>
+<span class="sd">                Agilent .D folder</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">dir_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">agilent_dir</span><span class="p">]</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">dir_list</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="AgilentGcms.from_root"><a class="viewcode-back" href="../../../valence.build.html#valence.build.agilentgcms.AgilentGcms.from_root">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_root</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">root_dir</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Initialize AgilentGcms from root folder containing at least one</span>
+<span class="sd">            Agilent .D folder.</span>
+
+<span class="sd">            Parameters</span>
+<span class="sd">            ----------</span>
+<span class="sd">            root_dir : str</span>
+<span class="sd">                Path to folder containing at least one Agilent .D folder.</span>
+
+<span class="sd">            Returns</span>
+<span class="sd">            -------</span>
+<span class="sd">            obj</span>
+<span class="sd">                AgilentGcms object constructed from a folder containing one</span>
+<span class="sd">                or more Agilent .D folders</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">dir_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root_dir</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span>
+                    <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="nb">next</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">walk</span><span class="p">(</span><span class="n">root_dir</span><span class="p">))[</span><span class="mi">1</span><span class="p">]]</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">dir_list</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">_common_stack</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">accessor</span><span class="p">,</span> <span class="n">attr</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Non-public method for stacking all data</span>
+
+<span class="sd">            Parameters</span>
+<span class="sd">            ----------</span>
+<span class="sd">            accessor : str</span>
+<span class="sd">            attr : str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">dfs</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_folders</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">df</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">accessor</span><span class="p">)[</span><span class="n">attr</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">df</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">dfs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="n">key</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">dfs</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s1">&#39;key&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dir_list</span><span class="p">,</span> <span class="n">dir_keys</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">dir_keys</span><span class="p">:</span>
+            <span class="n">dir_keys</span> <span class="o">=</span> <span class="p">[</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">path</span><span class="p">)</span> <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">dir_list</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_folders</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">AgilentGcmsDir</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+                         <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">dir_keys</span><span class="p">,</span> <span class="n">dir_list</span><span class="p">)}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_results_tic</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_common_stack</span><span class="p">(</span><span class="s1">&#39;results&#39;</span><span class="p">,</span> <span class="s1">&#39;tic&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_results_fid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_common_stack</span><span class="p">(</span><span class="s1">&#39;results&#39;</span><span class="p">,</span> <span class="s1">&#39;fid&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_results_lib</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_common_stack</span><span class="p">(</span><span class="s1">&#39;results&#39;</span><span class="p">,</span> <span class="s1">&#39;lib&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_datams</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_common_stack</span><span class="p">(</span><span class="s1">&#39;data&#39;</span><span class="p">,</span> <span class="s1">&#39;data&#39;</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">keys</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; list(str): Keys representing .D folder names.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_folders</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">datams</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; pandas.DataFrame: DATA.MS data extracted from .D folders.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_datams</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">results_fid</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; pandas.DataFrame: RESULTS.CSV fid data from .D folders</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_results_fid</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">results_lib</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; pandas.DataFrame: RESULTS.CSV lib data from .D folders</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_results_lib</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">results_tic</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; pandas.DataFrame: RESULTS.CSV tic data from all .D folders</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_results_tic</span></div>
+</pre></div>
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, Audere Labs.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../../',
+            VERSION:'0.0.1',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>
