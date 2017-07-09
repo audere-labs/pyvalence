@@ -165,7 +165,7 @@
 
 
 <div class="viewcode-block" id="AgilentGcmsTableBase"><a class="viewcode-back" href="../../../valence.build.html#valence.build.agilentgcms.AgilentGcmsTableBase">[docs]</a><span class="k">class</span> <span class="nc">AgilentGcmsTableBase</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot; Base class for Agilent GCMS builders. It should not be</span>
+    <span class="sd">&quot;&quot;&quot; Base class for Agilent GCMS builders. This class should not be</span>
 <span class="sd">        instantiated directly.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="nd">@classmethod</span>
@@ -367,13 +367,17 @@
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        file_path : str</span>
-<span class="sd">            Path to ``DATA.MS`` file.</span>
+<span class="sd">            Path to DATA.MS file.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">__data_colstr</span> <span class="o">=</span> <span class="p">{</span>
+
+    <span class="n">__chrom_colstr</span> <span class="o">=</span> <span class="p">{</span>
         <span class="s1">&#39;tic&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;tic&#39;</span><span class="p">,</span> <span class="s1">&#39;f4&#39;</span><span class="p">),</span>
         <span class="s1">&#39;tme&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;tme&#39;</span><span class="p">,</span> <span class="s1">&#39;f4&#39;</span><span class="p">)</span>
     <span class="p">}</span>
-    <span class="n">__colstr_key</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;data&#39;</span><span class="p">:</span> <span class="n">__data_colstr</span><span class="p">}</span>
+
+    <span class="n">__colstr_key</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;chromatogram&#39;</span><span class="p">:</span> <span class="n">__chrom_colstr</span>
+    <span class="p">}</span>
 
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">_read_chromatogram</span><span class="p">(</span><span class="n">file_path</span><span class="p">):</span>
@@ -486,20 +490,20 @@
         <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="o">.</span><span class="n">todense</span><span class="p">(),</span> <span class="n">index</span><span class="o">=</span><span class="n">times</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="n">ions</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_path</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">file_path</span> <span class="o">=</span> <span class="n">file_path</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_spectra</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_read_spectra</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__colstr_key</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_read_chromatogram</span><span class="p">,</span> <span class="n">file_path</span><span class="p">)</span>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">chromatogram</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot; tic and tme data as DataFrame</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">]</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">spectra</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; WIP: For testing chromatogram build</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_read_spectra</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">file_path</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_spectra</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">chromatogram</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;chromatogram&#39;</span><span class="p">]</span></div>
 
 
 <div class="viewcode-block" id="AgilentGcmsDir"><a class="viewcode-back" href="../../../valence.build.html#valence.build.agilentgcms.AgilentGcmsDir">[docs]</a><span class="k">class</span> <span class="nc">AgilentGcmsDir</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
@@ -600,7 +604,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">datams</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; obj: AgilentGcmsDataMs built from DATA.MS file in</span>
 <span class="sd">            Agilent .D folder</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -664,13 +668,8 @@
                     <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="nb">next</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">walk</span><span class="p">(</span><span class="n">root_dir</span><span class="p">))[</span><span class="mi">1</span><span class="p">]]</span>
         <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">dir_list</span><span class="p">)</span></div>
 
-    <span class="k">def</span> <span class="nf">_common_stack</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">accessor</span><span class="p">,</span> <span class="n">attr</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_pandas_stack</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">accessor</span><span class="p">,</span> <span class="n">attr</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Non-public method for stacking all data</span>
-
-<span class="sd">            Parameters</span>
-<span class="sd">            ----------</span>
-<span class="sd">            accessor : str</span>
-<span class="sd">            attr : str</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">dfs</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_folders</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
@@ -679,15 +678,23 @@
                 <span class="n">dfs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="n">key</span><span class="p">))</span>
         <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">dfs</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s1">&#39;key&#39;</span><span class="p">)</span>
 
+    <span class="k">def</span> <span class="nf">_dict_stack</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">accessor</span><span class="p">,</span> <span class="n">attr</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; temporary hack to accomodate unstackable spectra</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">{</span><span class="n">key</span><span class="p">:</span> <span class="nb">getattr</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">accessor</span><span class="p">),</span> <span class="n">attr</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_folders</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+
+
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dir_list</span><span class="p">,</span> <span class="n">dir_keys</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">dir_keys</span><span class="p">:</span>
             <span class="n">dir_keys</span> <span class="o">=</span> <span class="p">[</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">path</span><span class="p">)</span> <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">dir_list</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_folders</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">AgilentGcmsDir</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
                          <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">dir_keys</span><span class="p">,</span> <span class="n">dir_list</span><span class="p">)}</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_results_tic</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_common_stack</span><span class="p">(</span><span class="s1">&#39;results&#39;</span><span class="p">,</span> <span class="s1">&#39;tic&#39;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_results_fid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_common_stack</span><span class="p">(</span><span class="s1">&#39;results&#39;</span><span class="p">,</span> <span class="s1">&#39;fid&#39;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_results_lib</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_common_stack</span><span class="p">(</span><span class="s1">&#39;results&#39;</span><span class="p">,</span> <span class="s1">&#39;lib&#39;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_datams</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_common_stack</span><span class="p">(</span><span class="s1">&#39;data&#39;</span><span class="p">,</span> <span class="s1">&#39;data&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_results_tic</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pandas_stack</span><span class="p">(</span><span class="s1">&#39;results&#39;</span><span class="p">,</span> <span class="s1">&#39;tic&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_results_fid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pandas_stack</span><span class="p">(</span><span class="s1">&#39;results&#39;</span><span class="p">,</span> <span class="s1">&#39;fid&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_results_lib</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pandas_stack</span><span class="p">(</span><span class="s1">&#39;results&#39;</span><span class="p">,</span> <span class="s1">&#39;lib&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_chromatogram</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pandas_stack</span><span class="p">(</span><span class="s1">&#39;datams&#39;</span><span class="p">,</span> <span class="s1">&#39;chromatogram&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_spectra</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dict_stack</span><span class="p">(</span><span class="s1">&#39;datams&#39;</span><span class="p">,</span> <span class="s1">&#39;spectra&#39;</span><span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">keys</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -696,10 +703,16 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_folders</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">datams</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">chromatogram</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; pandas.DataFrame: DATA.MS data extracted from .D folders.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_datams</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_chromatogram</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">spectra</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_spectra</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">results_fid</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>

@@ -9,18 +9,6 @@ Subpackages
     valence.analyze
     valence.build
 
-Submodules
-----------
-
-valence\.utils module
----------------------
-
-.. automodule:: valence.utils
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-
 Module contents
 ---------------
 

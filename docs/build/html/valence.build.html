@@ -187,8 +187,8 @@ the folders’ names are used.</li>
 </tbody>
 </table>
 <dl class="attribute">
-<dt id="valence.build.agilentgcms.AgilentGcms.datams">
-<code class="descname">datams</code><a class="headerlink" href="#valence.build.agilentgcms.AgilentGcms.datams" title="Permalink to this definition">¶</a></dt>
+<dt id="valence.build.agilentgcms.AgilentGcms.chromatogram">
+<code class="descname">chromatogram</code><a class="headerlink" href="#valence.build.agilentgcms.AgilentGcms.chromatogram" title="Permalink to this definition">¶</a></dt>
 <dd><p><em>pandas.DataFrame</em> – DATA.MS data extracted from .D folders.</p>
 </dd></dl>
 
@@ -255,6 +255,11 @@ or more Agilent .D folders</td>
 <dd><p><em>pandas.DataFrame</em> – RESULTS.CSV tic data from all .D folders</p>
 </dd></dl>
 
+<dl class="attribute">
+<dt id="valence.build.agilentgcms.AgilentGcms.spectra">
+<code class="descname">spectra</code><a class="headerlink" href="#valence.build.agilentgcms.AgilentGcms.spectra" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 </dd></dl>
 
 <dl class="class">
@@ -267,15 +272,14 @@ and stacking into single pandas DataFrame</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>file_path</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – Path to <code class="docutils literal"><span class="pre">DATA.MS</span></code> file.</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>file_path</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – Path to DATA.MS file.</td>
 </tr>
 </tbody>
 </table>
 <dl class="attribute">
 <dt id="valence.build.agilentgcms.AgilentGcmsDataMs.chromatogram">
 <code class="descname">chromatogram</code><a class="headerlink" href="#valence.build.agilentgcms.AgilentGcmsDataMs.chromatogram" title="Permalink to this definition">¶</a></dt>
-<dd><p>tic and tme data as DataFrame</p>
-</dd></dl>
+<dd></dd></dl>
 
 <dl class="attribute">
 <dt id="valence.build.agilentgcms.AgilentGcmsDataMs.spectra">
@@ -299,8 +303,8 @@ and stacking into single pandas DataFrame</p>
 </tbody>
 </table>
 <dl class="attribute">
-<dt id="valence.build.agilentgcms.AgilentGcmsDir.data">
-<code class="descname">data</code><a class="headerlink" href="#valence.build.agilentgcms.AgilentGcmsDir.data" title="Permalink to this definition">¶</a></dt>
+<dt id="valence.build.agilentgcms.AgilentGcmsDir.datams">
+<code class="descname">datams</code><a class="headerlink" href="#valence.build.agilentgcms.AgilentGcmsDir.datams" title="Permalink to this definition">¶</a></dt>
 <dd><p><em>obj</em> – AgilentGcmsDataMs built from DATA.MS file in
 Agilent .D folder</p>
 </dd></dl>
@@ -352,7 +356,7 @@ and mutation of tables into single pandas df</p>
 <dt id="valence.build.agilentgcms.AgilentGcmsTableBase">
 <em class="property">class </em><code class="descclassname">valence.build.agilentgcms.</code><code class="descname">AgilentGcmsTableBase</code><span class="sig-paren">(</span><em>col_keys</em>, <em>reader</em>, <em>file_path</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/valence/build/agilentgcms.html#AgilentGcmsTableBase"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#valence.build.agilentgcms.AgilentGcmsTableBase" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/2/library/functions.html#object" title="(in Python v2.7)"><code class="xref py py-class docutils literal"><span class="pre">object</span></code></a></p>
-<p>Base class for Agilent GCMS builders. It should not be
+<p>Base class for Agilent GCMS builders. This class should not be
 instantiated directly.</p>
 </dd></dl>
 

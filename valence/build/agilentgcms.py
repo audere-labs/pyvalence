@@ -10,7 +10,7 @@ import pandas as pd
 
 
 class AgilentGcmsTableBase(object):
-    """ Base class for Agilent GCMS builders. It should not be
+    """ Base class for Agilent GCMS builders. This class should not be
         instantiated directly.
     """
     @classmethod
@@ -212,13 +212,17 @@ class AgilentGcmsDataMs(AgilentGcmsTableBase):
         Parameters
         ----------
         file_path : str
-            Path to ``DATA.MS`` file.
+            Path to DATA.MS file.
     """
-    __data_colstr = {
+
+    __chrom_colstr = {
         'tic': ('tic', 'f4'),
         'tme': ('tme', 'f4')
     }
-    __colstr_key = {'data': __data_colstr}
+
+    __colstr_key = {
+        'chromatogram': __chrom_colstr
+    }
 
     @staticmethod
     def _read_chromatogram(file_path):
@@ -331,20 +335,20 @@ class AgilentGcmsDataMs(AgilentGcmsTableBase):
         return pd.DataFrame(data=data.todense(), index=times, columns=ions)
 
     def __init__(self, file_path):
-        self.file_path = file_path
+        self._spectra = self._read_spectra(file_path)
         super().__init__(self.__colstr_key, self._read_chromatogram, file_path)
-
-    @property
-    def chromatogram(self):
-        """ tic and tme data as DataFrame
-        """
-        return self['data']
 
     @property
     def spectra(self):
         """ WIP: For testing chromatogram build
         """
-        return self._read_spectra(self.file_path)
+        return self._spectra
+
+    @property
+    def chromatogram(self):
+        """
+        """
+        return self['chromatogram']
 
 
 class AgilentGcmsDir(object):
@@ -445,7 +449,7 @@ class AgilentGcmsDir(object):
         return self._data[key]
 
     @property
-    def data(self):
+    def datams(self):
         """ obj: AgilentGcmsDataMs built from DATA.MS file in
             Agilent .D folder
         """
@@ -509,13 +513,8 @@ class AgilentGcms(object):
                     for path in next(os.walk(root_dir))[1]]
         return cls(dir_list)
 
-    def _common_stack(self, accessor, attr):
+    def _pandas_stack(self, accessor, attr):
         """ Non-public method for stacking all data
-
-            Parameters
-            ----------
-            accessor : str
-            attr : str
         """
         dfs = []
         for key, val in self._folders.items():
@@ -524,15 +523,23 @@ class AgilentGcms(object):
                 dfs.append(df.assign(key=key))
         return pd.concat(dfs, axis=0).set_index('key')
 
+    def _dict_stack(self, accessor, attr):
+        """ temporary hack to accomodate unstackable spectra
+        """
+        return {key: getattr(getattr(val, accessor), attr)
+                for key, val in self._folders.items()}
+
+
     def __init__(self, dir_list, dir_keys=None):
         if not dir_keys:
             dir_keys = [os.path.basename(path) for path in dir_list]
         self._folders = {k: AgilentGcmsDir(v)
                          for k, v in zip(dir_keys, dir_list)}
-        self._results_tic = self._common_stack('results', 'tic')
-        self._results_fid = self._common_stack('results', 'fid')
-        self._results_lib = self._common_stack('results', 'lib')
-        self._datams = self._common_stack('data', 'data')
+        self._results_tic = self._pandas_stack('results', 'tic')
+        self._results_fid = self._pandas_stack('results', 'fid')
+        self._results_lib = self._pandas_stack('results', 'lib')
+        self._chromatogram = self._pandas_stack('datams', 'chromatogram')
+        self._spectra = self._dict_stack('datams', 'spectra')
 
     @property
     def keys(self):
@@ -541,10 +548,16 @@ class AgilentGcms(object):
         return self._folders.keys()
 
     @property
-    def datams(self):
+    def chromatogram(self):
         """ pandas.DataFrame: DATA.MS data extracted from .D folders.
         """
-        return self._datams
+        return self._chromatogram
+
+    @property
+    def spectra(self):
+        """
+        """
+        return self._spectra
 
     @property
     def results_fid(self):

@@ -1,1 +1,6 @@
-from .agilentgcms import AgilentGcms, AgilentGcmsDataMs
+from .agilentgcms import (
+    AgilentGcms,
+    AgilentGcmsDir,
+    AgilentGcmsDataMs,
+    AgilentGcmsResults,
+)
