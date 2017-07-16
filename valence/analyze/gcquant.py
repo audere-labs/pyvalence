@@ -91,8 +91,12 @@ def std_curves(compiled, standards):
             value_vars=list(standards.keys()[1:])
         )
         standards_melted.columns = ['library_id', 'key', 'cal_conc']
-        return (pd.merge(compiled.reset_index(),
-                         standards_melted,
+
+        print(compiled.index)
+
+        compiled = (compiled.assign(key=compiled.index)
+                            .reset_index(drop=True))
+        return (pd.merge(compiled, standards_melted,
                          how='left',
                          on=['library_id', 'key'])
                   .dropna(subset=['cal_conc']))
