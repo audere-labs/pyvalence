@@ -3,6 +3,11 @@ tools/
 .DS_Store
 *.csv
 __pycache__/
-valence.egg-info/
 .ipynb_checkpoints
 *.json
+*.swp
+*.pyc
+linux-32/
+linux-64/
+win-32/
+win-64/
