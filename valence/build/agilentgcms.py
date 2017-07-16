@@ -4,9 +4,9 @@ import re
 import csv
 import os
 import struct
-import scipy.sparse
 import numpy as np
 import pandas as pd
+import scipy.sparse
 
 
 class AgilentGcmsTableBase(object):
