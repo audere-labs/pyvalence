@@ -1,0 +1,326 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>valence.analyze.gcquant package &mdash; valence 0.0.1 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
+    <link rel="top" title="valence 0.0.1 documentation" href="index.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> valence
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.0.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <!-- Local TOC -->
+              <div class="local-toc"><ul>
+<li><a class="reference internal" href="#">valence.analyze.gcquant package</a><ul>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-valence.analyze.gcquant.gcquant">valence.analyze.gcquant.gcquant module</a></li>
+<li><a class="reference internal" href="#module-valence.analyze.gcquant.gcquant_methods">valence.analyze.gcquant.gcquant_methods module</a></li>
+<li><a class="reference internal" href="#module-valence.analyze.gcquant">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</div>
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">valence</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>valence.analyze.gcquant package</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/valence.analyze.gcquant.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="valence-analyze-gcquant-package">
+<h1>valence.analyze.gcquant package<a class="headerlink" href="#valence-analyze-gcquant-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-valence.analyze.gcquant.gcquant">
+<span id="valence-analyze-gcquant-gcquant-module"></span><h2>valence.analyze.gcquant.gcquant module<a class="headerlink" href="#module-valence.analyze.gcquant.gcquant" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="valence.analyze.gcquant.gcquant.GCQuant">
+<em class="property">class </em><code class="descclassname">valence.analyze.gcquant.gcquant.</code><code class="descname">GCQuant</code><span class="sig-paren">(</span><em>lib</em>, <em>area</em>, <em>standards</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/valence/analyze/gcquant/gcquant.html#GCQuant"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#valence.analyze.gcquant.gcquant.GCQuant" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/2/library/functions.html#object" title="(in Python v2.7)"><code class="xref py py-class docutils literal"><span class="pre">object</span></code></a></p>
+<p>quantifies the concentrations based on calibration curves using
+dataframes generated from Agilent</p>
+<dl class="docutils">
+<dt>Constructors:</dt>
+<dd>align: aligns lib and tic/fid on r.t.</dd>
+</dl>
+<dl class="attribute">
+<dt id="valence.analyze.gcquant.gcquant.GCQuant.keys">
+<code class="descname">keys</code><a class="headerlink" href="#valence.analyze.gcquant.gcquant.GCQuant.keys" title="Permalink to this definition">¶</a></dt>
+<dd><p>dir_keys</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="valence.analyze.gcquant.gcquant.GCQuant.datams">
+<code class="descname">datams</code><a class="headerlink" href="#valence.analyze.gcquant.gcquant.GCQuant.datams" title="Permalink to this definition">¶</a></dt>
+<dd><p>data collected from data.ms files as DataFrame</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="valence.analyze.gcquant.gcquant.GCQuant.results_fid">
+<code class="descname">results_fid</code><a class="headerlink" href="#valence.analyze.gcquant.gcquant.GCQuant.results_fid" title="Permalink to this definition">¶</a></dt>
+<dd><p>fid table from results.csv files as DataFrame</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="valence.analyze.gcquant.gcquant.GCQuant.resutls_lib">
+<code class="descname">resutls_lib</code><a class="headerlink" href="#valence.analyze.gcquant.gcquant.GCQuant.resutls_lib" title="Permalink to this definition">¶</a></dt>
+<dd><p>lib table from results.csv files as DataFrame</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="valence.analyze.gcquant.gcquant.GCQuant.results_tic">
+<code class="descname">results_tic</code><a class="headerlink" href="#valence.analyze.gcquant.gcquant.GCQuant.results_tic" title="Permalink to this definition">¶</a></dt>
+<dd><p>tic table from result.csv files as DataFrame</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="valence.analyze.gcquant.gcquant.GCQuant.compiled">
+<code class="descname">compiled</code><a class="headerlink" href="#valence.analyze.gcquant.gcquant.GCQuant.compiled" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="valence.analyze.gcquant.gcquant.GCQuant.concentrations">
+<code class="descname">concentrations</code><a class="headerlink" href="#valence.analyze.gcquant.gcquant.GCQuant.concentrations" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="valence.analyze.gcquant.gcquant.GCQuant.concentrations_exp">
+<code class="descname">concentrations_exp</code><a class="headerlink" href="#valence.analyze.gcquant.gcquant.GCQuant.concentrations_exp" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="valence.analyze.gcquant.gcquant.GCQuant.concentrations_std">
+<code class="descname">concentrations_std</code><a class="headerlink" href="#valence.analyze.gcquant.gcquant.GCQuant.concentrations_std" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="valence.analyze.gcquant.gcquant.GCQuant.stdcurves">
+<code class="descname">stdcurves</code><a class="headerlink" href="#valence.analyze.gcquant.gcquant.GCQuant.stdcurves" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-valence.analyze.gcquant.gcquant_methods">
+<span id="valence-analyze-gcquant-gcquant-methods-module"></span><h2>valence.analyze.gcquant.gcquant_methods module<a class="headerlink" href="#module-valence.analyze.gcquant.gcquant_methods" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="valence.analyze.gcquant.gcquant_methods.GCMethods">
+<em class="property">class </em><code class="descclassname">valence.analyze.gcquant.gcquant_methods.</code><code class="descname">GCMethods</code><a class="reference internal" href="_modules/valence/analyze/gcquant/gcquant_methods.html#GCMethods"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#valence.analyze.gcquant.gcquant_methods.GCMethods" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/2/library/functions.html#object" title="(in Python v2.7)"><code class="xref py py-class docutils literal"><span class="pre">object</span></code></a></p>
+<dl class="method">
+<dt id="valence.analyze.gcquant.gcquant_methods.GCMethods.cal_curves">
+<code class="descname">cal_curves</code><span class="sig-paren">(</span><em>matched_cal_conc</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/valence/analyze/gcquant/gcquant_methods.html#GCMethods.cal_curves"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#valence.analyze.gcquant.gcquant_methods.GCMethods.cal_curves" title="Permalink to this definition">¶</a></dt>
+<dd><p>take a matched calibration concentration dataframe
+(matched_cal_conc) and does a linear regression and returns
+a dataframe of the library_ids with linregress stats and the
+min/max areas which is the range for which the calibration curve
+can (should only) be used. this is only for cases where each
+molecule has a calibration curve i.e. tic and/or fid</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-valence.analyze.gcquant">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-valence.analyze.gcquant" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, Audere Labs.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'0.0.1',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>
