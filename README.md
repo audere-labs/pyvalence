@@ -1,4 +1,6 @@
-# `valence` 
+
+![valence](valence-logo.png)
+---
 
 replace above with image / logo
 
