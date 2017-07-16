@@ -57,7 +57,7 @@ def match_area(lib, area, threshold=0.1):
             x.reset_index(),
             area_grouped.get_group(x.name).reset_index())
     )
-    return returndf.drop(['header=', 'pct_area', 'ref'], axis=1)
+    return returndf.reset_index(level=0).drop(['header=', 'pct_area', 'ref','key'], axis=1)
 
 
 def std_curves(compiled, standards):
@@ -91,8 +91,6 @@ def std_curves(compiled, standards):
             value_vars=list(standards.keys()[1:])
         )
         standards_melted.columns = ['library_id', 'key', 'cal_conc']
-
-        print(compiled.index)
         
         return (pd.merge(compiled.reset_index(),
                          standards_melted,
