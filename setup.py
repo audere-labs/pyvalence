@@ -49,7 +49,7 @@ options = {
     ],
     'package_data': {'valence': []},
     'include_package_data': True,
-    'install_requires': ['scipy', 'pandas']
+    'install_requires': ['numpy', 'scipy', 'pandas']
 }
 
 setup(**options)
