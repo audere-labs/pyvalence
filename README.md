@@ -1,5 +1,8 @@
 
-![valence](logo/valence-logo.png)
+<!-- ![valence](logo/valence-logo.png) -->
+
+<img src="logo/valence-logo.pn" alt="valence" height="70%" display="block">
+
 ---
 
 ## Overview
@@ -8,7 +11,7 @@ summary of valence philosopy and purpose
 
 ### Features
 
-highlight nifty features, potentially add some screenshots / plot outputs
+highlight nifty features, potentially add some screen-shots / plot outputs
 
 ## Installation
 
