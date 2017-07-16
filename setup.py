@@ -34,7 +34,7 @@ options = {
     'long_description': LONG_DESCRIPTION,
     'platforms': ['Any'],
     'classifiers': [
-        'Development Status :: 2 - Pre-Alpha',
+        'Development Status :: 1 - Planning',
         'Environment :: Console',
         'Intended Audience :: Science/Research',
         'Operating System :: OS Independent',
