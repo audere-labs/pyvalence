@@ -3,7 +3,7 @@ package:
   version: "0.0.1"
 
 source:
-  git_rev: 8d30d6af8410bbb171a6325ac984b6a6620000fc 
+  git_rev: dfd3034b66bffd7afe15a33da73634326c8243c4 
   git_url: https://github.com/blakeboswell/valence.git
 
 build:
