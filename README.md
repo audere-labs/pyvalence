@@ -1,18 +1,30 @@
 # `valence` 
 
+replace above with image / logo
+
 ## Overview
+
+summary of valence philosopy and purpose
 
 ### Features
 
+highlight nifty features, potentially add some screenshots / plot outputs
+
 ## Installation
 
-### Dependencies
+Binary installers for the alpha version are available via `conda`.
 
-## Usage
+``` bash
+conda install -c blakeboswell valence=0.0.1
+```
 
-### Documentation
+## Documentation
+
+[TBD]()
 
 ### Examples
+
+Tour the example notebooks at [https://github.com/blakeboswell/valence-examples](https://github.com/blakeboswell/valence-examples).
 
 ## License
 
