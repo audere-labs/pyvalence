@@ -49,7 +49,7 @@ The following dependencies are bundled in the `valence` install:
 
 ### Examples
 
-Tour the example notebooks at [`valence` on-rails](https://github.com/blakeboswell/valence-on-rails).
+Tour the _on-rails_ example notebooks at [`valence` on-rails](https://github.com/blakeboswell/valence-on-rails).
 
 ## License
 
