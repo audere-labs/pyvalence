@@ -15,7 +15,7 @@ highlight nifty features, potentially add some screen-shots / plot outputs
 
 ## Installation
 
-### `conda`
+### conda
 
 `valence` depends on scientific python packages that can be tricky to build from source.  For that reason, we recommend the [Anaconda python distribution](https://www.continuum.io/downloads) which utilizes the `conda` package management system.
 
@@ -25,7 +25,7 @@ With `conda`, binary installers for the planning version of `valence` are access
 conda install -c blakeboswell valence=0.0.1
 ```
 
-### `PyPi`
+### PyPi
 
 > Forthcoming
 
