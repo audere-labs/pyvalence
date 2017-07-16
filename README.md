@@ -35,11 +35,13 @@ conda install -c blakeboswell valence=0.0.1
 
 ## Dependencies
 
+- [`Python`](https://www.python.org) >= 3.6
+
 The following dependencies are bundled in the `valence` install:
 
-- [`pandas >= 0.20.2`](http://pandas.pydata.org)
-- [`numpy >= 1.13.1`](https://www.scipy.org)
-- [`scipy >= 0.19.1`](http://www.numpy.org)
+- [`pandas`](http://pandas.pydata.org) >= 0.20.2
+- [`numpy`](https://www.scipy.org) >= 1.13.1
+- [`scipy`](http://www.numpy.org)  >= 0.19.1
 
 ## Documentation
 
