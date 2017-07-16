@@ -1,0 +1,29 @@
+package:
+  name: valence
+  version: "0.0.1"
+
+source:
+  git_rev: 8d30d6af8410bbb171a6325ac984b6a6620000fc 
+  git_url: https://github.com/blakeboswell/valence.git
+
+build:
+  number: 0
+  script: python setup.py install --single-version-externally-managed --record record.txt
+
+requirements:
+  build:
+    - python
+  run:
+    - python
+    - pandas
+    - scipy
+
+test:
+  imports:
+    - valence
+    - valence.build
+
+about:
+  home: https://github.com/blakeboswell/valence
+  license: BSD-3
+  license_file: LICENSE
