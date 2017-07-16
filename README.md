@@ -24,7 +24,7 @@ conda install -c blakeboswell valence=0.0.1
 
 ### Examples
 
-Tour the example notebooks in rhw [`valence` examples repository](https://github.com/blakeboswell/valence-examples).
+Tour the example notebooks in the [`valence` examples repository](https://github.com/blakeboswell/valence-examples).
 
 ## License
 
