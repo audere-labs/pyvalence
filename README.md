@@ -1,7 +1,7 @@
 
 <!-- ![valence](logo/valence-logo.png) -->
 
-<img src="logo/valence-logo.png" alt="valence" width="70%" display="block">
+<img src="logo/valence-logo.png" alt="valence" width="70%" display="block" margin: "auto";>
 
 ---
 
