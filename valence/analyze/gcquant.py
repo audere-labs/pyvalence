@@ -57,7 +57,7 @@ def match_area(lib, area, threshold=0.1):
             x.reset_index(),
             area_grouped.get_group(x.name).reset_index())
     )
-    return returndf.drop(['header=', 'pct_area', 'ref'], axis=1)
+    return returndf.reset_index(level=0).drop(['header=', 'pct_area', 'ref','key'], axis=1)
 
 
 def std_curves(compiled, standards):
@@ -91,15 +91,22 @@ def std_curves(compiled, standards):
             value_vars=list(standards.keys()[1:])
         )
         standards_melted.columns = ['library_id', 'key', 'cal_conc']
+        
         return (pd.merge(compiled.reset_index(),
                          standards_melted,
                          how='left',
                          on=['library_id', 'key'])
                   .dropna(subset=['cal_conc']))
+    def lin_wrap(group):
+        """ """
+        if group.shape[0] > 1:
+            return linregress(group.area, group.cal_conc)
+        else:
+            pass
 
     matched_cal_conc = match_cal_conc(compiled, standards)
     b = (matched_cal_conc.groupby('library_id')
-                            .apply(lambda a: linregress(a.area, a.cal_conc))
+                            .apply(lambda df: lin_wrap(df))
                             .apply(pd.Series)
                             .reset_index())
     b.columns = ['library_id', 'responsefactor', 'intercept', 
