@@ -97,10 +97,16 @@ def std_curves(compiled, standards):
                          how='left',
                          on=['library_id', 'key'])
                   .dropna(subset=['cal_conc']))
+    def lin_wrap(group):
+        """ """
+        if group.shape[0] > 1:
+            return linregress(group.area, group.cal_conc)
+        else:
+            pass
 
     matched_cal_conc = match_cal_conc(compiled, standards)
     b = (matched_cal_conc.groupby('library_id')
-                            .apply(lambda a: linregress(a.area, a.cal_conc))
+                            .apply(lambda df: lin_wrap(df))
                             .apply(pd.Series)
                             .reset_index())
     b.columns = ['library_id', 'responsefactor', 'intercept', 
