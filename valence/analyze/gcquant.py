@@ -7,21 +7,33 @@ from scipy.stats import linregress
 
 
 def match_area(lib, area, threshold=0.1):
-    """ brief description ... match area from many dataframes
+    """ Matches areas to identified via MS spectra based on retention times. 
+
+    The method matches the species which have the smallest difference
+    between the two retention times that is smaller than the set threshold.
 
         Args
         ----
         lib : pandas.DataFrame
-            describe lib
+            A dataframe containing identified species and associated retention time.
+            the dataframe can be created from csv files by using AgilentGcms class
+            from the build module within Valence. It can also be created manually
+            but must contain a 'library_id' and 'rt' column.
         area : pandas.DataFrame
-            describe area
+            A dataframe containing peak area integrations and associated
+            retention time. The dataframe can be created from csv files by 
+            using AgilentGcms class from the build module within Valence. 
+            It can also be created manually but must contain a 'area' and 'rt' column.
         threshold : float
-            describe threshold, optional, default = 0.1
+            The threshold is an optional falue (default = 0.1) for which the difference
+            of two RTs, one from lib and one from area, must be below for the 
+            match to be accepted.
 
         Returns
         -------
         pandas.DataFrame
-            describe what it returns
+            Returned is a dataframe which has library IDs matched to an area based 
+            on the difference of the retention times.
 
     """
     def find_match(x, Y):
@@ -61,23 +73,26 @@ def match_area(lib, area, threshold=0.1):
 
 
 def std_curves(compiled, standards):
-    """ brief description ...
-        takes in compiled dataframe of species with areas and
-        a standards df and calculates the corresponding RF
-        this is only for cases where each molecule has a calibration
-        curve i.e. tic and/or fid
+    """ Takes matched_area dataframe (compiled), of species with areas and ids
+        and a standards dataframe to calculate the corresponding response factor (RF)
 
         Args
         ----
         compiled : pandas.DataFrame
-            describe compiled
+            Compiled is a dataframe containing identified species and an associated
+            area with unknown concentrations. It can be generated from match_area
         standards : pandas.DataFrame
-            describe standards
+            Standards is a dataframe containing all species for which there is 
+            calibration standard. The first column should be 'library_id' and each
+            subsequent column should contain the file name for a stanards vial. The
+            value of each row for file should be the concentration in Molar for that 
+            species in that vial.
 
         Returns
         -------
         pandas.DataFrame
-            describe what it returns
+            Returns a dataframe with linearly regressed response factors and 
+            associated statics for the calculation.
 
     """
     def match_cal_conc(compiled, standards):
@@ -119,10 +134,27 @@ def std_curves(compiled, standards):
 
 
 def concentrations(compiled, stdcurves):
-    """ this function takes a dataframe which contains species matched
+    """ Calculates the concentration of species.
+
+        Concentrations takes a dataframe which contains species matched
         to an area (compiled) and a calibration curve dataframe (stdcurves)
         it uses these values to calculate the concentration using the 
-        slope (responsefactors) and intercept
+        slope (response factors) and intercept
+
+        Args
+        ----
+        compiled : pandas.DataFrame
+            Compiled is a dataframe containing identified species and an associated
+            area with unknown concentrations. It can be generated from match_area
+        stdcurves : pandas.DataFrame
+            This is a dataframe containing the calculated response factors. It is 
+            generated from std_curves
+
+        Returns
+        -------
+        pandas.DataFrame
+            A dataframe is returned which contains all data from compiled plus the
+            calculated concentrations, concentration percentages, & area percentages
     """
     def conc_cal(x):
         aX = x['area'] * x['responsefactor']
@@ -159,11 +191,56 @@ def concentrations(compiled, stdcurves):
 
 
 def concentrations_exp(concentrations, standards):
+    """ Returns only species with unknown concentrations, no standards.
+
+        This is a subset of the data generated from concentrations. It 
+        provides a simple way to remove any standards in the dataset.
+
+        Args
+        ----
+        concentrations : pandas.DataFrame
+            Compiled is a dataframe containing identified species and an associated
+            area with unknown concentrations. It can be generated from match_area
+        standards : pandas.DataFrame
+            Standards is a dataframe containing all species for which there is 
+            calibration standard. The first column should be 'library_id' and each
+            subsequent column should contain the file name for a stanards vial. The
+            value of each row for file should be the concentration in Molar for that 
+            species in that vial.
+
+        Returns
+        -------
+        pandas.DataFrame
+            A dataframe is returned which contains only data from concentrations
+            which had unknown concentrations
+    """
     std_keys = list(standards.keys())[1:]
     conc_df = concentrations.reset_index()
     return conc_df[-conc_df['key'].isin(std_keys)].set_index('key')
 
 def concentrations_std(concentrations, standards):
+    """ Returns only species with known concentrations, i.e. standards.
+
+        This is a subset of the data generated from concentrations. It 
+        provides a simple way get the standards from the dataset.
+
+        Args
+        ----
+        concentrations : pandas.DataFrame
+            Compiled is a dataframe containing identified species and an associated
+            area with unknown concentrations. It can be generated from match_area
+        standards : pandas.DataFrame
+            Standards is a dataframe containing all species for which there is 
+            calibration standard. The first column should be 'library_id' and each
+            subsequent column should contain the file name for a stanards vial. The
+            value of each row for file should be the concentration in Molar for that 
+            species in that vial.
+
+        Returns
+        -------
+        pandas.DataFrame
+            A dataframe is returned which contains only data for standards/
+    """
     std_keys = list(standards.keys())[1:]
     conc_df = concentrations.reset_index()
     return conc_df[conc_df['key'].isin(std_keys)].set_index('key')
