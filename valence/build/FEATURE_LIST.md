@@ -14,3 +14,22 @@ Additionally, I belive their LC-MS (liquid chromotography-mass spectrometry) and
  - **.csv**: the csv will contain the library report data and the integration data as long as the user presses the two buttons necssary to calculate these values 
  - **.ini**: these are *configuration settings*, for the instrument, we arent concerned with them.
  - **.M**: this folder looks like an exact copy of the method for the data aquistion, basically  nothing useful unless you have and Agilent GCMS
+
+# Future Features
+There are not prioritized, they are just a list of features we could build.
+## Agilent GCMS
+- mass spectra interpretation using a library
+- peak integration
+- fid analytical methods
+## General GCMS
+- other proprietary data formats
+- other open source formats
+## NMR
+ - valence.build for Bruker NMR files (Bruker basically has a monopoly on NMR instrumentation, I dont even know nor have seen a different company although I am sure there is one out there)
+ - valence.analysis for NMR, Ill have to think about what types of analysis we would want
+## FTIR
+- valence.build
+- valence.analyze
+## UV-Vis
+- valence.build
+- valence.analyze
