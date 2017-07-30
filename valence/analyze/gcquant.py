@@ -24,8 +24,7 @@ class MatchHack():
     def rt_match(self, lib_row, rt): 
         x, i = lib_row.rt, lib_row.name - self.na_count
         match = self.find_match(x, rt[i:], self.threshold)   
-        if pd.isnull(match):
-            self.na_count += 1
+        self.na_count = self.na_count + 1 if np.isnan(match) else 0
         return match
 
     def rt_matcher(self, longs, shorts):
