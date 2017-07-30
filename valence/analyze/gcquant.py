@@ -10,7 +10,7 @@ class MatchHack():
 
     def __init__(self, threshold):
         self.threshold = threshold
-        self.na_count = 0
+        self.last_match = 0
 
     @staticmethod
     def find_match(x, Y, threshold):
@@ -21,13 +21,11 @@ class MatchHack():
         return_value = Y.apply(score).idxmin()
         return return_value
 
-    def rt_match(self, lib_row, rt): 
-        x, i = lib_row.rt, lib_row.name - self.na_count
+    def rt_match(self, lib_row, rt):
+        x, i = lib_row.rt, self.last_match
         match = self.find_match(x, rt[i:], self.threshold)
-        if pd.isnull(match):
-            self.na_count += 1
-        else:
-            self.na_count = max(0, self.na_count - 1)
+        if not pd.isnull(match):
+            self.last_match = match + 1
         return match
 
     def rt_matcher(self, longs, shorts):
