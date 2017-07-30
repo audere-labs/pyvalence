@@ -39,7 +39,7 @@ def match_area(lib, area, threshold=0.1):
     def find_match(x, Y):
         """ find index of argmin lambda(x,Y) """
         def score(y):
-            u = (x - y)**2
+            u = abs(x - y)
             return u if u < threshold else np.nan
         return_value = Y.apply(score).idxmin()
         return return_value
@@ -70,7 +70,6 @@ def match_area(lib, area, threshold=0.1):
             area_grouped.get_group(x.name).reset_index())
     )
     return returndf.reset_index(level=0).drop(['header=', 'pct_area', 'ref','key'], axis=1)
-
 
 def std_curves(compiled, standards):
     """ Takes matched_area dataframe (compiled), of species with areas and ids
@@ -132,7 +131,6 @@ def std_curves(compiled, standards):
     ).reset_index()
     return pd.merge(b, d, on='library_id')
 
-
 def concentrations(compiled, stdcurves):
     """ Calculates the concentration of species.
 
@@ -189,7 +187,6 @@ def concentrations(compiled, stdcurves):
     return_df.drop(drop_cols, axis=1, inplace=True)
     return return_df.set_index('key')
 
-
 def concentrations_exp(concentrations, standards):
     """ Returns only species with unknown concentrations, no standards.
 
@@ -244,7 +241,6 @@ def concentrations_std(concentrations, standards):
     std_keys = list(standards.keys())[1:]
     conc_df = concentrations.reset_index()
     return conc_df[conc_df['key'].isin(std_keys)].set_index('key')
-
 
 class GCQuant(object):
     """ quantifies the concentrations based on calibration curves using
