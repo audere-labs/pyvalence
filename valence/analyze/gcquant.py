@@ -6,6 +6,33 @@ import pandas as pd
 from scipy.stats import linregress
 
 
+class MatchHack():
+
+    def __init__(self, threshold):
+        self.threshold = threshold
+        self.na_count = 0
+
+    @staticmethod
+    def find_match(x, Y, threshold):
+        """ find index of argmin lambda(x,Y) """
+        def score(y):
+            u = abs(x - y)
+            return u if u < threshold else np.nan
+        return_value = Y.apply(score).idxmin()
+        return return_value
+
+    def rt_match(self, lib_row, rt): 
+        x, i = lib_row.rt, lib_row.name - self.na_count
+        match = self.find_match(x, rt[i:], self.threshold)   
+        if pd.isnull(match):
+            self.na_count += 1
+        return match
+
+    def rt_matcher(self, longs, shorts):
+        return shorts.apply(self.rt_match, rt=longs.rt.sort_values(), axis=1)
+    
+
+
 def match_area(lib, area, threshold=0.1):
     """ Matches areas to identified via MS spectra based on retention times. 
 
@@ -44,34 +71,23 @@ def match_area(lib, area, threshold=0.1):
         return_value = Y.apply(score).idxmin()
         return return_value
 
-    def rt_matcher():
-        na_count = 0
-   
-        def rt_match(lib_row, rt):        
-            """ find closest rt """        
-            x, i = lib_row.rt, lib_row.name - na_count        
-            match = find_match(x, rt[i:])        
-            if pd.isnull(match):            
-                na_count += 1        
-            return match    
-        return rt_match
-
-    # def rt_match(lib_row, rt):
-    #     """ find closest rt """
+    # def rt_match(lib_row, rt):        
+    #     """ find closest rt """   
     #     x, i = lib_row.rt, lib_row.name
     #     return find_match(x, rt[i:])
 
     def matchiter(lib, area):
         """ match area on rt from single df """
+        match_hack = MatchHack(threshold)
         lib = lib.assign(area=np.nan)
         lib = lib.assign(rt_area=np.nan)
         if lib.shape[0] > area.shape[0]:
-            xi = area.apply(rt_matcher(), rt=lib.rt.sort_values(), axis=1)
+            xi = match_hack.rt_matcher(lib, area)
             xi, yi = xi[~pd.isnull(xi)], xi[~pd.isnull(xi)].index
             lib.area[xi] = area.area[yi]
             lib.rt_area[xi] = area.rt[yi]
         else:
-            xi = lib.apply(rt_matcher(), rt=area.rt.sort_values(), axis=1)
+            xi = match_hack.rt_matcher(area, lib)
             xi, yi = xi[~pd.isnull(xi)], xi[~pd.isnull(xi)].index
             lib.area[yi] = area.area[xi].values
             lib.rt_area[yi] = area.rt[xi]
