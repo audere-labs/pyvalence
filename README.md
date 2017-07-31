@@ -22,7 +22,7 @@ highlight nifty features, potentially add some screen-shots / plot outputs
 With `conda`, binary installers for the planning version of `valence` are accessible via:
 
 ``` bash
-conda install -c blakeboswell valence=0.0.1
+conda install -c blakeboswell valence=0.0.2
 ```
 
 ### PyPi
