@@ -7,77 +7,103 @@ from scipy.stats import linregress
 
 
 def match_area(lib, area, threshold=0.1):
-    """ brief description ... match area from many dataframes
+    """ Matches areas to identified via MS spectra based on retention times. 
+
+    The method matches the species which have the smallest difference
+    between the two retention times that is smaller than the set threshold.
 
         Args
         ----
         lib : pandas.DataFrame
-            describe lib
+            A dataframe containing identified species and associated retention time.
+            the dataframe can be created from csv files by using AgilentGcms class
+            from the build module within Valence. It can also be created manually
+            but must contain a 'library_id' and 'rt' column.
         area : pandas.DataFrame
-            describe area
+            A dataframe containing peak area integrations and associated
+            retention time. The dataframe can be created from csv files by 
+            using AgilentGcms class from the build module within Valence. 
+            It can also be created manually but must contain a 'area' and 'rt' column.
         threshold : float
-            describe threshold, optional, default = 0.1
+            The threshold is an optional falue (default = 0.1) for which the difference
+            of two RTs, one from lib and one from area, must be below for the 
+            match to be accepted.
 
         Returns
         -------
         pandas.DataFrame
-            describe what it returns
+            Returned is a dataframe which has library IDs matched to an area based 
+            on the difference of the retention times.
 
     """
-    def find_match(x, Y):
-        """ find index of argmin lambda(x,Y) """
-        def score(y):
-            u = (x - y)**2
-            return u if u < threshold else np.nan
-        return_value = Y.apply(score).idxmin()
-        return return_value
 
-    def rt_match(lib_row, rt):
-        """ find closest rt """
-        x, i = lib_row.rt, lib_row.name
-        return find_match(x, rt[i:])
+    def matchiter(lib, area, threshold):
+        '''
+        '''
+        df = (pd.DataFrame({
+                    'xi': list(range(len(area))) * len(lib),
+                    'yi': [k for j in [[i]*len(area)
+                                       for i in range(len(lib))] for k in j]
+        }))
 
-    def matchiter(lib, area):
-        """ match area on rt from single df """
-        lib = lib.assign(area=np.nan)
-        if lib.shape[0] > area.shape[0]:
-            xi = area.apply(rt_match, rt=lib.rt.sort_values(), axis=1)
-            xi, yi = xi[~pd.isnull(xi)], xi[~pd.isnull(xi)].index
-            lib.area[xi] = area.area[yi]
-        else:
-            xi = lib.apply(rt_match, rt=area.rt.sort_values(), axis=1)
-            xi, yi = xi[~pd.isnull(xi)], xi[~pd.isnull(xi)].index
-            lib.area[yi] = area.area[xi].values
+        def distance(row, x, y):
+            return abs(x[row.xi] - y[row.yi])
+        
+        def find_mins(df):
+            xys, xs, ys  = [], [], []
+            while df.shape[0] > 0:
+                top = df[df.index == df.distance.idxmin()]
+                xys.append(top)
+                xs.append(top.xi)
+                ys.append(top.yi)
+                df = df[~(df.xi.isin(xs) | (df.yi.isin(ys)))]
+            return pd.concat(xys)
+                
+        df['distance'] = df.apply(distance, axis = 1, x=area.rt.values, y=lib.rt.values)
+        df = df[df.distance <= threshold]
+        
+        match = find_mins(df)
+        xi, yi = match.xi, match.yi
+        
+        lib['area'] = lib['rt_area'] = np.nan
+        lib.loc[yi, 'area'] = area.area[xi].values
+        lib.loc[yi, 'rt_area'] = area.rt[xi].values
+        
         return lib.set_index('key')
 
     lib_grouped = (lib.groupby(lib.index))
     area_grouped = (area.groupby(area.index))
     returndf = lib_grouped.apply(
         lambda x: matchiter(
-            x.reset_index(),
-            area_grouped.get_group(x.name).reset_index())
+            lib=x.reset_index(),
+            area=area_grouped.get_group(x.name).reset_index(),
+            threshold=threshold)
     )
-    return returndf.reset_index(level=0).drop(['header=', 'pct_area', 'ref','key'], axis=1)
+    return (returndf.reset_index(level=0)
+                    .drop(['header=', 'pct_area', 'ref','key'], axis=1))
 
 
 def std_curves(compiled, standards):
-    """ brief description ...
-        takes in compiled dataframe of species with areas and
-        a standards df and calculates the corresponding RF
-        this is only for cases where each molecule has a calibration
-        curve i.e. tic and/or fid
+    """ Takes matched_area dataframe (compiled), of species with areas and ids
+        and a standards dataframe to calculate the corresponding response factor (RF)
 
         Args
         ----
         compiled : pandas.DataFrame
-            describe compiled
+            Compiled is a dataframe containing identified species and an associated
+            area with unknown concentrations. It can be generated from match_area
         standards : pandas.DataFrame
-            describe standards
+            Standards is a dataframe containing all species for which there is 
+            calibration standard. The first column should be 'library_id' and each
+            subsequent column should contain the file name for a stanards vial. The
+            value of each row for file should be the concentration in Molar for that 
+            species in that vial.
 
         Returns
         -------
         pandas.DataFrame
-            describe what it returns
+            Returns a dataframe with linearly regressed response factors and 
+            associated statics for the calculation.
 
     """
     def match_cal_conc(compiled, standards):
@@ -117,12 +143,28 @@ def std_curves(compiled, standards):
     ).reset_index()
     return pd.merge(b, d, on='library_id')
 
-
 def concentrations(compiled, stdcurves):
-    """ this function takes a dataframe which contains species matched
+    """ Calculates the concentration of species.
+
+        Concentrations takes a dataframe which contains species matched
         to an area (compiled) and a calibration curve dataframe (stdcurves)
         it uses these values to calculate the concentration using the 
-        slope (responsefactors) and intercept
+        slope (response factors) and intercept
+
+        Args
+        ----
+        compiled : pandas.DataFrame
+            Compiled is a dataframe containing identified species and an associated
+            area with unknown concentrations. It can be generated from match_area
+        stdcurves : pandas.DataFrame
+            This is a dataframe containing the calculated response factors. It is 
+            generated from std_curves
+
+        Returns
+        -------
+        pandas.DataFrame
+            A dataframe is returned which contains all data from compiled plus the
+            calculated concentrations, concentration percentages, & area percentages
     """
     def conc_cal(x):
         aX = x['area'] * x['responsefactor']
@@ -157,17 +199,60 @@ def concentrations(compiled, stdcurves):
     return_df.drop(drop_cols, axis=1, inplace=True)
     return return_df.set_index('key')
 
-
 def concentrations_exp(concentrations, standards):
+    """ Returns only species with unknown concentrations, no standards.
+
+        This is a subset of the data generated from concentrations. It 
+        provides a simple way to remove any standards in the dataset.
+
+        Args
+        ----
+        concentrations : pandas.DataFrame
+            Compiled is a dataframe containing identified species and an associated
+            area with unknown concentrations. It can be generated from match_area
+        standards : pandas.DataFrame
+            Standards is a dataframe containing all species for which there is 
+            calibration standard. The first column should be 'library_id' and each
+            subsequent column should contain the file name for a stanards vial. The
+            value of each row for file should be the concentration in Molar for that 
+            species in that vial.
+
+        Returns
+        -------
+        pandas.DataFrame
+            A dataframe is returned which contains only data from concentrations
+            which had unknown concentrations
+    """
     std_keys = list(standards.keys())[1:]
     conc_df = concentrations.reset_index()
     return conc_df[-conc_df['key'].isin(std_keys)].set_index('key')
 
 def concentrations_std(concentrations, standards):
+    """ Returns only species with known concentrations, i.e. standards.
+
+        This is a subset of the data generated from concentrations. It 
+        provides a simple way get the standards from the dataset.
+
+        Args
+        ----
+        concentrations : pandas.DataFrame
+            Compiled is a dataframe containing identified species and an associated
+            area with unknown concentrations. It can be generated from match_area
+        standards : pandas.DataFrame
+            Standards is a dataframe containing all species for which there is 
+            calibration standard. The first column should be 'library_id' and each
+            subsequent column should contain the file name for a stanards vial. The
+            value of each row for file should be the concentration in Molar for that 
+            species in that vial.
+
+        Returns
+        -------
+        pandas.DataFrame
+            A dataframe is returned which contains only data for standards/
+    """
     std_keys = list(standards.keys())[1:]
     conc_df = concentrations.reset_index()
     return conc_df[conc_df['key'].isin(std_keys)].set_index('key')
-
 
 class GCQuant(object):
     """ quantifies the concentrations based on calibration curves using
