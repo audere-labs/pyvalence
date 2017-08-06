@@ -6,130 +6,92 @@ import pandas as pd
 from scipy.stats import linregress
 
 
-class MatchHack():
-
-	def __init__(self, threshold):
-		self.threshold = threshold
-		self.last_match = 0
-
-	@staticmethod
-	def find_match(x, Y, threshold):
-		""" find index of argmin lambda(x,Y) """
-		def score(y):
-			u = abs(x - y)
-			return u if u < threshold else np.nan
-		return_value = Y.apply(score).idxmin()
-		return return_value
-
-	def rt_match(self, lib_row, rt):
-		x, i = lib_row.rt, self.last_match
-		match = self.find_match(x, rt[i:], self.threshold)
-		if not pd.isnull(match):
-			self.last_match = match + 1
-		return match
-
-	def rt_matcher(self, longs, shorts):
-		return shorts.apply(self.rt_match, rt=longs.rt.sort_values(), axis=1)
-	
-
 
 def match_area(lib, area, threshold=0.1,metrics=False):
-	""" Matches areas to identified via MS spectra based on retention times. 
+    """ Matches areas to identified via MS spectra based on retention times. 
 
-	The method matches the species which have the smallest difference
-	between the two retention times that is smaller than the set threshold.
+    The method matches the species which have the smallest difference
+    between the two retention times that is smaller than the set threshold.
 
-		Args
-		----
-		lib : pandas.DataFrame
-			A dataframe containing identified species and associated retention time.
-			the dataframe can be created from csv files by using AgilentGcms class
-			from the build module within Valence. It can also be created manually
-			but must contain a 'library_id' and 'rt' column.
-		area : pandas.DataFrame
-			A dataframe containing peak area integrations and associated
-			retention time. The dataframe can be created from csv files by 
-			using AgilentGcms class from the build module within Valence. 
-			It can also be created manually but must contain a 'area' and 'rt' column.
-		threshold : float
-			The threshold is an optional falue (default = 0.1) for which the difference
-			of two RTs, one from lib and one from area, must be below for the 
-			match to be accepted.		
+        Args
+        ----
+        lib : pandas.DataFrame
+            A dataframe containing identified species and associated retention time.
+            the dataframe can be created from csv files by using AgilentGcms class
+            from the build module within Valence. It can also be created manually
+            but must contain a 'library_id' and 'rt' column.
+        area : pandas.DataFrame
+            A dataframe containing peak area integrations and associated
+            retention time. The dataframe can be created from csv files by 
+            using AgilentGcms class from the build module within Valence. 
+            It can also be created manually but must contain a 'area' and 'rt' column.
+        threshold : float
+            The threshold is an optional falue (default = 0.1) for which the difference
+            of two RTs, one from lib and one from area, must be below for the 
+            match to be accepted.
+
 		metrics: boolean
 			When metrics is true the area peak, rt and delta between the matched lib
 			peak is returned in additional columns of the dataframe. This allows for 
 			easy verification that matching worked correctly.
 
-		Returns
-		-------
-		pandas.DataFrame
-			Returned is a dataframe which has library IDs matched to an area based 
-			on the difference of the retention times.
+        Returns
+        -------
+        pandas.DataFrame
+            Returned is a dataframe which has library IDs matched to an area based 
+            on the difference of the retention times.
 
-	"""
-	def find_match(x, Y):
-		""" find index of argmin lambda(x,Y) """
-		def score(y):
-			u = abs(x - y)
-			return u if u < threshold else np.nan
-		return_value = Y.apply(score).idxmin()
-		return return_value
+    """
 
-	def matchiter(lib, area):
-		""" match area on rt from single df """
-		def match_algo(lib,area):
-			if lib.shape[0] > area.shape[0]:
-				xi = match_hack.rt_matcher(lib, area)
-				xi, yi = xi[~pd.isnull(xi)], xi[~pd.isnull(xi)].index
-				lib.area[xi] = area.area[yi]
-				# lib.rt_area[xi] = area.rt[yi]
-			else:
-				xi = match_hack.rt_matcher(area, lib)
-				xi, yi = xi[~pd.isnull(xi)], xi[~pd.isnull(xi)].index
-				lib.area[yi] = area.area[xi].values
-				# lib.rt_area[yi] = area.rt[xi]
-			return lib
+    def matchiter(lib, area, threshold):
+        '''
+        '''
+        df = (pd.DataFrame({
+                    'xi': list(range(len(area))) * len(lib),
+                    'yi': [k for j in [[i]*len(area)
+                                       for i in range(len(lib))] for k in j]
+        }))
 
-		def match_algo_metrics(lib,area):
-			lib = lib.assign(area_pk=np.nan)
-			lib = lib.assign(area_rt=np.nan)
-			lib = lib.assign(delta_rt=np.nan)
+        def distance(row, x, y):
+            return abs(x[row.xi] - y[row.yi])
+        
+        def find_mins(df):
+            xys, xs, ys  = [], [], []
+            while df.shape[0] > 0:
+                top = df[df.index == df.distance.idxmin()]
+                xys.append(top)
+                xs.append(top.xi)
+                ys.append(top.yi)
+                df = df[~(df.xi.isin(xs) | (df.yi.isin(ys)))]
+            return pd.concat(xys)
+                
+        df['distance'] = df.apply(distance, axis = 1, x=area.rt.values, y=lib.rt.values)
+        df = df[df.distance <= threshold]
+        
+        match = find_mins(df)
+        xi, yi = match.xi, match.yi
 
-			if lib.shape[0] > area.shape[0]:
-				xi = match_hack.rt_matcher(lib, area)
-				xi, yi = xi[~pd.isnull(xi)], xi[~pd.isnull(xi)].index
+	    lib['area'] = lib['rt_area'] = np.nan
+	    lib.loc[yi, 'area'] = area.area[xi].values       
+        
+        if metrics:
+			lib['area_pk'] = lib['area_rt'] = lib['delta_rt'] = np.nan
+			lib.loc[yi, 'area_pk'] = area.peak[xi].values
+			lib.loc[yi, 'area_rt'] = area.rt[xi].values
+			lib['delta_rt'] = np.abs(lib.loc[yi, 'rt']-lib.loc[yi, 'area_rt'])
+    
+        return lib.set_index('key')
 
-				lib.area_pk[xi] = area.peak[yi]
-				lib.area[xi] = area.area[yi]
-				lib.area_rt[xi] = area.rt[yi]
-
-			else:
-				xi = match_hack.rt_matcher(area, lib)
-				xi, yi = xi[~pd.isnull(xi)], xi[~pd.isnull(xi)].index
-
-				lib.area_pk[yi] = area.peak[xi]
-				lib.area[yi] = area.area[xi].values
-				lib.area_rt[yi] = area.rt[xi]
-
-			lib.delta_rt = lib.rt-lib.area_rt
-			return lib
-	
-		match_hack = MatchHack(threshold)
-		lib = lib.assign(area=np.nan)
-		
-		if metrics:
-			return match_algo_metrics(lib,area).set_index('key')			
-		else:
-			return match_algo(lib,area).set_index('key')
-
-	lib_grouped = (lib.groupby(lib.index))
-	area_grouped = (area.groupby(area.index))
-	returndf = lib_grouped.apply(
-		lambda x: matchiter(
-			x.reset_index(),
-			area_grouped.get_group(x.name).reset_index())
-	)
-	return returndf.reset_index(level=0).drop(['header=', 'pct_area', 'ref','key'], axis=1)
+    lib_grouped = (lib.groupby(lib.index))
+    area_grouped = (area.groupby(area.index))
+    returndf = lib_grouped.apply(
+        lambda x: matchiter(
+            lib=x.reset_index(),
+            area=area_grouped.get_group(x.name).reset_index(),
+            threshold=threshold)
+    )
+    return (returndf.reset_index(level=0)
+                    .drop(['header=', 'pct_area', 'ref','key'], axis=1))
 
 def std_curves(compiled, standards):
 	""" Takes matched_area dataframe (compiled), of species with areas and ids
