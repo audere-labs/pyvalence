@@ -1,6 +1,6 @@
 package:
   name: valence
-  version: "0.0.1.1"
+  version: "0.0.1.2"
 
 source:
   git_rev: 35a78e722c7eed87d8d8400b6270e3e79ea8d748
