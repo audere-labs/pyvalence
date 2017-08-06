@@ -42,6 +42,13 @@ def match_area(lib, area, threshold=0.1,metrics=False):
 			on the difference of the retention times.
 
 	"""
+	def area_percent(comp):
+		
+		comp_g = comp.groupby(comp.index)
+		comp['area%'] =(comp_g.apply(lambda x: x.area/x.area.sum())
+							.reset_index(level=0)
+							.drop('key',axis=1).area)
+		return comp
 
 	def matchiter(lib, area, threshold):
 		'''
@@ -90,8 +97,8 @@ def match_area(lib, area, threshold=0.1,metrics=False):
 			area=area_grouped.get_group(x.name).reset_index(),
 			threshold=threshold)
 	)
-	return (returndf.reset_index(level=0)
-					.drop(['header=', 'pct_area', 'ref','key'], axis=1))
+	return area_percent((returndf.reset_index(level=0)
+					.drop(['header=', 'pct_area', 'ref','key'], axis=1)))
 
 def std_curves(compiled, standards):
 	""" Takes matched_area dataframe (compiled), of species with areas and ids
@@ -198,15 +205,15 @@ def concentrations(compiled, stdcurves):
 	return_df.drop(['totals_c'], axis=1, inplace=True)
 
 	# calculate area percentage
-	totals_a = pd.DataFrame(
-		{'totals_a': (return_df.groupby('key')['area']
-							   .apply(np.sum, axis=0))
-		}
-	).reset_index()
-	return_df = return_df.merge(totals_a, on=['key'])
-	return_df['area%'] = return_df['area']/return_df['totals_a']
-	drop_cols = ['totals_a', 'responsefactor', 'intercept', 'max','min']
-	return_df.drop(drop_cols, axis=1, inplace=True)
+	# totals_a = pd.DataFrame(
+	# 	{'totals_a': (return_df.groupby('key')['area']
+	# 						   .apply(np.sum, axis=0))
+	# 	}
+	# ).reset_index()
+	# return_df = return_df.merge(totals_a, on=['key'])
+	# return_df['area%'] = return_df['area']/return_df['totals_a']
+	# drop_cols = ['totals_a', 'responsefactor', 'intercept', 'max','min']
+	# return_df.drop(drop_cols, axis=1, inplace=True)
 	return return_df.set_index('key')
 
 def concentrations_exp(concentrations, standards):
