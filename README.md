@@ -1,6 +1,4 @@
 
-<!-- ![valence](logo/valence-logo.png) -->
-
 <img src="logo/pyvalence-logo.png" alt="valence" width="80%" display="block" margin="auto">
 
 ---
