@@ -9,7 +9,7 @@
 
 ## Overview
 
-Pyvalence is a library for analytical chemistry techniques which aims to reduce data analysis time so reachers can spend more time interpreting results. By providing a python library for reading in analytical data from the native formats and organizatng it into readily accessible pandas dataframes analysis can be moved away from the benchside and accelerated. Pyvalence supports common analysis techniques (e.g. standard curves regression and utilization) to reduce manual, one-off data processing.
+Pyvalence is a library for processing data generated from analytical chemistry. Pyvalence aims to reduce data analysis time so reachers can spend more time interpreting results. By providing a python library for reading in analytical data from the native formats and organizatng it into readily accessible pandas dataframes analysis can be moved away from the benchside and accelerated. Pyvalence supports common analysis techniques (e.g. standard curves regression and utilization) to reduce manual, one-off data processing.
 
 ### Features
 
