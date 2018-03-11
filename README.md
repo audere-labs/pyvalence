@@ -35,7 +35,7 @@ chromatgrams.loc['run1'].plot('tme','tic')
   <img src="images/chrom.svg" alt="Chromatogram" width="50%" display="block" margin="auto">
 </p>
 
-For GCMS data `valence.analysis` will compile, create regression curves and calculate concentrations few lines of code. 
+For GCMS data `valence.analysis` will compile data, create regression curves and calculate concentrations in few lines of code. 
 
 ```
 compiled_data = match_area(lib,area)
