@@ -7,7 +7,7 @@
 
 ## Overview
 
-`pyvalence` is a library for processing data generated from analytical chemistry. `pyvalence` reads analytical data from native formats into readily accessible `pandas` `DataFrames` and supports common analysis techniques (e.g. standard curves regression and utilization) to reduce manual, one-off data processing.  Analysis conducted with `pyvalence` allows researchers to spend less time processing data and more time interpreting results.  
+`pyvalence` is a python package for processing data generated from analytical chemistry. `pyvalence` reads analytical data from native formats into readily accessible `pandas` DataFrames and supports common analysis techniques (e.g. standard curves regression and utilization) to reduce manual, one-off data processing.  Analysis conducted with `pyvalence` allows researchers to spend less time processing data and more time interpreting results.  
 
 ### Features
 
