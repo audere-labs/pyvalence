@@ -1,5 +1,5 @@
 package:
-  name: valence
+  name: pyvalence
   version: "0.0.1.2"
 
 source:
@@ -20,8 +20,8 @@ requirements:
 
 test:
   imports:
-    - valence
-    - valence.build
+    - pyvalence
+    - pyvalence.build
 
 about:
   home: https://github.com/blakeboswell/valence

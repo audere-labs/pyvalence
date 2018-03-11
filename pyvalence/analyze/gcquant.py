@@ -1,6 +1,6 @@
-""" valence.analyze contains the methods necessary to calculate concentrations
-    from an Agilent GCMS where the species and areas have already been
-    determined and are retained in a .csv file.
+""" pyvalence.analyze contains the methods necessary to calculate
+    concentrations from an Agilent GCMS where the species and areas have
+    already been determined and are retained in a .csv file.
 """
 
 import numpy as np

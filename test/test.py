@@ -1,15 +1,14 @@
 import pandas as pd
-from valence.build import AgilentGcms
-from valence.analyze import (
+from pyvalence.build import AgilentGcms
+from pyvalence.analyze import (
     match_area,
     std_curves,
-    concentrations,
-    GCQuant
+    concentrations
 )
 
 
 if __name__ == '__main__':
-    
+
     agi = AgilentGcms.from_root('data/test3')
 
     lib = agi.results_lib

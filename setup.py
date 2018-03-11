@@ -2,15 +2,15 @@
 
 import os
 from setuptools import setup
-from valence import __version__
+from pyvalence import __version__
 
 
-PKG_NAME = 'valence'
+PKG_NAME = 'pyvalence'
 PKG_AUTHOR = 'Audere Labs'
 PKG_LICENSE = 'BSD'
 
 AUTHOR_EMAIL = 'audere.labs@gmail.com'
-MAINTAINER_EMAIL = '' # google group / forum
+MAINTAINER_EMAIL = ''  # google group / forum
 
 URL = 'https://audere.github.com/valence'
 DOWNLOAD_URL = ''
@@ -45,9 +45,9 @@ options = {
         'Topic :: Scientific/Engineering :: Chemistry'
     ],
     'packages': [
-        'valence', 'valence.build', 'valence.analyze'
+        'pyvalence', 'pyvalence.build', 'pyvalence.analyze'
     ],
-    'package_data': {'valence': []},
+    'package_data': {'pyvalence': []},
     'include_package_data': True,
     'install_requires': ['numpy', 'scipy', 'pandas']
 }
