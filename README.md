@@ -1,5 +1,5 @@
 
-<img src="logo/pyvalence-logo.png" alt="valence" width="80%" display="block" margin="auto">
+<img src="images/pyvalence-logo.png" alt="valence" width="80%" display="block" margin="auto">
 
 ---
 
