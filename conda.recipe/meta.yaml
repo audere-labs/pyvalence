@@ -3,7 +3,7 @@ package:
   version: "0.0.1.2"
 
 source:
-  git_rev: d55cdc6b1aad0dbfae679a4ce0a58b8b2147772c
+  git_rev: 515ab24c7bf5d8122ac217df7184f1e0b0da6df2
   git_url: https://github.com/audere-labs/pyvalence.git
 
 build:
