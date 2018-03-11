@@ -35,6 +35,14 @@ curves        = std_curves(comp,stnd)
 conc          = concentrations(compiled_data,curves)
 ```
 
+Plotting the chromatogram is now simple with matplotlib
+
+```
+chromatgrams.plot('tme','tic')
+```
+<p align="center">
+  <img src="images/chrom.svg" alt="Chromatogram" width="50%" display="block" margin="auto">
+</p>
 
 ## Installation
 
