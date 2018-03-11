@@ -29,7 +29,7 @@ chromatograms = agi.chromatogram
 Plotting the chromatogram is now simple with matplotlib
 
 ```
-chromatgrams.plot('tme','tic')
+chromatgrams.loc['run1'].plot('tme','tic')
 ```
 <p align="center">
   <img src="images/chrom.svg" alt="Chromatogram" width="50%" display="block" margin="auto">
