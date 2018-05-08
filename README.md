@@ -50,7 +50,7 @@ conc          = concentrations(compiled_data,curves)
 With `conda`, binary installers for the planning version of `pyvalence` are accessible via:
 
 ``` bash
-conda install -c blakeboswell pyvalence=0.0.2
+conda install -c blakeboswell pyvalence
 ```
 
 ### PyPi
