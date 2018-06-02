@@ -518,17 +518,25 @@ class AgilentGcms(object):
         """
         dfs = []
         for key, val in self._folders.items():
-            df = getattr(val, accessor)[attr]
-            if df is not None:
-                dfs.append(df.assign(key=key))
+            try:
+                df = getattr(val, accessor)[attr]
+                if df is not None:
+                    dfs.append(df.assign(key=key))
+            except KeyError:
+                # dfs.append(pd.DataFrame({'key': [key]}))
+                print(f'cannot access `{attr}` from `{accessor}` file')
         return pd.concat(dfs, axis=0).set_index('key')
 
     def _dict_stack(self, accessor, attr):
         """ temporary hack to accomodate unstackable spectra
         """
-        return {key: getattr(getattr(val, accessor), attr)
-                for key, val in self._folders.items()}
-
+        stack = {}
+        for key, val in self._folders.items():
+            try:
+                stack[key] = getattr(getattr(val, accessor), attr)
+            except KeyError:
+                print(f'cannot access `{attr}` from `{accessor}` file')
+        return stack
 
     def __init__(self, dir_list, dir_keys=None):
         if not dir_keys:
