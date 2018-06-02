@@ -96,8 +96,12 @@ def match_area(lib, area, threshold=0.1, metrics=False):
 
         return lib.set_index('key')
 
-    lib_grouped = (lib.groupby(lib.index))
-    area_grouped = (area.groupby(area.index))
+    if lib is None or area is None:
+        print('Not enough info for `match_area`.')
+        return None
+
+    lib_grouped = lib.groupby(lib.index)
+    area_grouped = area.groupby(area.index)
     returndf = lib_grouped.apply(
         lambda x: matchiter(
             lib=x.reset_index(),
@@ -159,6 +163,10 @@ def std_curves(compiled, standards):
         else:
             pass
 
+    if compiled is None or standards is None:
+        print('Not enough info for `std_curves`.')
+        return None
+
     matched_cal_conc = match_cal_conc(compiled, standards)
     b = (matched_cal_conc.groupby('library_id')
                          .apply(lambda df: lin_wrap(df))
@@ -204,6 +212,10 @@ def concentrations(compiled, stdcurves):
         conc = aX + B if aX + B > 0 else np.nan
         return conc
 
+    if compiled is None or stdcurves is None:
+        print('Not enough info for `concentrations`.')
+        return None
+
     # calculate concentration of species
     compiled = compiled.reset_index()
     return_df = (pd.merge(compiled, stdcurves, on='library_id', how='outer')
@@ -247,6 +259,9 @@ def concentrations_exp(concentrations, standards):
             A dataframe is returned which contains only data from
             concentrations which had unknown concentrations
     """
+    if concentrations is None or standards is None:
+        print('Not enough info for `concentrations_exp`.')
+        return None
     std_keys = list(standards.keys())[1:]
     conc_df = concentrations.reset_index()
     return conc_df[-conc_df['key'].isin(std_keys)].set_index('key')
@@ -276,6 +291,9 @@ def concentrations_std(concentrations, standards):
         pandas.DataFrame
             A dataframe is returned which contains only data for standards/
     """
+    if concentrations is None or standards is None:
+        print('Not enough info for `concentrations_std`.')
+        return None
     std_keys = list(standards.keys())[1:]
     conc_df = concentrations.reset_index()
     return conc_df[conc_df['key'].isin(std_keys)].set_index('key')

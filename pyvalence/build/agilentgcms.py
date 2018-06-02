@@ -74,7 +74,7 @@ class AgilentGcmsTableBase(object):
         if not self._data:
             self._data = self._build_data()
         if key not in self._data:
-            return None
+            self._data[key] = None
         return self._data[key]
 
     def __getitem__(self, key):
@@ -223,6 +223,14 @@ class AgilentGcmsDataMs(AgilentGcmsTableBase):
     __colstr_key = {
         'chromatogram': __chrom_colstr
     }
+
+    @classmethod
+    def access_colstr(attr):
+        ''' return header only
+        '''
+        if attr in __colstr_key:
+            return __colstr_key[attr]
+        return None
 
     @staticmethod
     def _read_chromatogram(file_path):
@@ -443,7 +451,7 @@ class AgilentGcmsDir(object):
             DataFrame
                 Data loaded from file associated with ``key``.
         """
-        self._key_validate(key)
+        self._key_validate(key)        
         if self._data[key] is None:
             self._data[key] = AgilentGcmsDir.__file_str[key](self._files[key])
         return self._data[key]
@@ -524,7 +532,11 @@ class AgilentGcms(object):
                     dfs.append(df.assign(key=key))
             except KeyError:
                 # dfs.append(pd.DataFrame({'key': [key]}))
-                print(f'cannot access `{attr}` from `{accessor}` file')
+                print(f'missing `{attr}` from `{accessor}` in {key}')
+
+        if not dfs:
+            return None
+        
         return pd.concat(dfs, axis=0).set_index('key')
 
     def _dict_stack(self, accessor, attr):
