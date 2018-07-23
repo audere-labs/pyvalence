@@ -3,7 +3,8 @@ from pyvalence.build import AgilentGcms
 from pyvalence.analyze import (
     match_area,
     std_curves,
-    concentrations
+    concentrations,
+    find_peaks
 )
 
 
@@ -41,3 +42,13 @@ if __name__ == '__main__':
     conc = concentrations(comp, stdc)
     if not conc is None:
         print(conc.head())
+
+    print('chromotogram peaks')
+    
+    chrom = agi.chromatogram
+    test_key = chrom.index.unique()[0]
+    chrom = chrom.loc[test_key]
+
+    print(chrom.head())
+    peaks = find_peaks(chrom.tic, height = chrom.tic.mean())
+    print(peaks)

@@ -3,3 +3,5 @@ from .gcquant import (
     std_curves,
     concentrations
 )
+
+from .peaks import find_peaks
