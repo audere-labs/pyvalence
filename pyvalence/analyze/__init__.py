@@ -4,4 +4,7 @@ from .gcquant import (
     concentrations
 )
 
-from .peaks import find_peaks
+from .peaks import (
+    find_peaks,
+    integrate
+)
