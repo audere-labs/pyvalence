@@ -1,4 +1,5 @@
 import scipy.signal as signal
+from scipy import integrate
 
 
 def find_peaks(x, height=None, threshold=None,
@@ -13,5 +14,14 @@ def find_peaks(x, height=None, threshold=None,
     return peaks
 
 
-def integrate():
-    pass
+def integrate(chrom, a, b):
+    """ integrate the tic series of chromotogram data
+        between a, b
+
+        :param: chrom 
+        :param: a
+        :param: b
+        :return: area under chrome between tme a, b
+    """
+    chrom = chrom[(chrom.tme > a) | (chrom.tme <= b)]
+    return integrate.cumtrapz(chrom.tic)
