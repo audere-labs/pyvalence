@@ -8,7 +8,6 @@ import numpy as np
 import pandas as pd
 import scipy.sparse
 
-
 class AgilentGcmsTableBase(object):
     """ Base class for Agilent GCMS builders. This class should not be
         instantiated directly.
@@ -81,7 +80,6 @@ class AgilentGcmsTableBase(object):
         """ provide access to key in data
         """
         return self._access(key)
-
 
 class AgilentGcmsResults(AgilentGcmsTableBase):
     """ Manages reading of Agilent RESULT.CSV
@@ -203,7 +201,6 @@ class AgilentGcmsResults(AgilentGcmsTableBase):
         ''' return fid table
         '''
         return self['fid']
-
 
 class AgilentGcmsDataMs(AgilentGcmsTableBase):
     """ Manages reading of Agilent DATA.MS file
@@ -358,6 +355,73 @@ class AgilentGcmsDataMs(AgilentGcmsTableBase):
         """
         return self['chromatogram']
 
+class AgilentGcfid(AgilentGcmsTableBase):
+    """ Manages reading of Agilent DATA.MS file
+        and stacking into single pandas DataFrame
+
+        Parameters
+        ----------
+        file_path : str
+            Path to DATA.MS file.
+    """
+
+    __chrom_colstr = {
+        'fid': ('fid', 'f4'),
+        'tme': ('tme', 'f4')
+    }
+
+    __colstr_key = {
+        'chromatogram_fid': __chrom_colstr
+    }
+
+    @classmethod
+    def access_colstr(attr):
+        ''' return header only
+        '''
+        if attr in __colstr_key:
+            return __colstr_key[attr]
+        return None
+
+    @staticmethod
+    def _read_chromatogram_fid(file_path):
+        """ Extract fid and tme data from FID1A.ch file
+
+            Args:
+                file_path (str): path to FID1A.ch file
+
+            Returns:
+                ([meta], [data]): ``meta`` is the metadata lines
+                in the FID1A.ch file.  ``data`` is the fid and tme lines
+                from the FID1A.ch file as [fid, tme].
+        """
+        f = open(file_path, 'rb')
+
+        f.seek(0x11A)
+        start_time = struct.unpack('>f', f.read(4))[0] / 60000.
+        end_time = struct.unpack('>f', f.read(4))[0] / 60000.
+
+        f.seek(0x1800)
+        fid = np.fromfile(f, '<f8')
+        tme = np.linspace(start_time, end_time, fid.shape[0]) 
+
+        jj = [['fid', 'tme']] + [list(a) for a in list(zip(fid, tme))]
+        return [], [jj]  
+    
+
+    def __init__(self, file_path):
+        super().__init__(self.__colstr_key, self._read_chromatogram_fid, file_path)
+
+    @property
+    def spectra(self):
+        """ WIP: For testing chromatogram build
+        """
+        return self._spectra
+
+    @property
+    def chromatogram(self):
+        """
+        """
+        return self['chromatogram_fid']
 
 class AgilentGcmsDir(object):
     """ Read all GCMS files from Agilent .D folder.
@@ -380,7 +444,8 @@ class AgilentGcmsDir(object):
         'percent.txt': None,
         'pre_post.ini': None,
         'qreport.txt': None,
-        'results.csv': AgilentGcmsResults
+        'results.csv': AgilentGcmsResults,
+        'fid1a.ch':AgilentGcfid
     }
 
     @classmethod
@@ -463,13 +528,16 @@ class AgilentGcmsDir(object):
         """
         return self._data_cache('data.ms')
 
+    
+    @property
+    def datafid(self):
+        return self._data_cache('fid1a.ch')
     @property
     def results(self):
         """ obj: AgilentGcmsResult built from RESULTS.CSV file in
             Agilent .D folder.
         """
         return self._data_cache('results.csv')
-
 
 class AgilentGcms(object):
     """ Read GCMS files from one or more Agilent .D folders into a collection
@@ -559,7 +627,9 @@ class AgilentGcms(object):
         self._results_fid = self._pandas_stack('results', 'fid')
         self._results_lib = self._pandas_stack('results', 'lib')
         self._chromatogram = self._pandas_stack('datams', 'chromatogram')
+        self._chromatogram_fid = self._pandas_stack('datafid','chromatogram_fid')
         self._spectra = self._dict_stack('datams', 'spectra')
+
 
     @property
     def keys(self):
@@ -573,6 +643,12 @@ class AgilentGcms(object):
         """
         return self._chromatogram
 
+    @property
+    def chromatogram_fid(self):
+        """ pandas.DataFrame: FID.ch data extracted from .D folders.
+        """
+        return self._chromatogram_fid
+    
     @property
     def spectra(self):
         """
