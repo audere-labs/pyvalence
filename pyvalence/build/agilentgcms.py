@@ -241,8 +241,10 @@ class AgilentGcmsDataMs(AgilentGcmsTableBase):
                 in the DATA.MS file.  ``data`` is the tic and tme lines
                 from the DATA.MS file as [tic, tme].
         """
-        f = open(file_path, 'rb')
 
+        f = open(file_path, 'rb')
+        resolution = 0.0001 #desired time resolution in seconds
+        
         f.seek(0x5)             # get number of scans to read in
         if f.read(4) == 'GC':
             f.seek(0x142)
@@ -261,6 +263,15 @@ class AgilentGcmsDataMs(AgilentGcmsTableBase):
             f.seek(npos - 4)
             tic[i] = struct.unpack('>I', f.read(4))[0]
             f.seek(npos)
+        
+
+        try:
+            resolution_interval = int(resolution/(np.median((np.append(tme,0)-np.insert(tme,0,0))[0:-1])))
+            tme = tme[0::resolution_interval]
+            tic = tic[0::resolution_interval]
+        except:
+            pass
+
         f.close()
         jj = [['tic', 'tme']] + [list(a) for a in list(zip(tic, tme))]
         return [], [jj]
@@ -356,7 +367,7 @@ class AgilentGcmsDataMs(AgilentGcmsTableBase):
         return self['chromatogram']
 
 class AgilentGcfid(AgilentGcmsTableBase):
-    """ Manages reading of Agilent DATA.MS file
+    """ Manages reading of Agilent FID file
         and stacking into single pandas DataFrame
 
         Parameters
@@ -394,6 +405,8 @@ class AgilentGcfid(AgilentGcmsTableBase):
                 in the FID1A.ch file.  ``data`` is the fid and tme lines
                 from the FID1A.ch file as [fid, tme].
         """
+        
+        resolution = 0.0001 #desired time resolution in seconds
         f = open(file_path, 'rb')
 
         f.seek(0x11A)
@@ -403,6 +416,14 @@ class AgilentGcfid(AgilentGcmsTableBase):
         f.seek(0x1800)
         fid = np.fromfile(f, '<f8')
         tme = np.linspace(start_time, end_time, fid.shape[0]) 
+
+        
+        try:
+            resolution_interval = int(resolution/(np.median((np.append(tme,0)-np.insert(tme,0,0))[0:-1])))
+            tme = tme[0::resolution_interval]
+            fid = fid[0::resolution_interval]
+        except:
+            pass
 
         jj = [['fid', 'tme']] + [list(a) for a in list(zip(fid, tme))]
         return [], [jj]  
@@ -604,7 +625,7 @@ class AgilentGcms(object):
 
         if not dfs:
             return None
-        
+
         return pd.concat(dfs, axis=0).set_index('key')
 
     def _dict_stack(self, accessor, attr):
@@ -626,8 +647,8 @@ class AgilentGcms(object):
         self._results_tic = self._pandas_stack('results', 'tic')
         self._results_fid = self._pandas_stack('results', 'fid')
         self._results_lib = self._pandas_stack('results', 'lib')
-        self._chromatogram = self._pandas_stack('datams', 'chromatogram')
-        self._chromatogram_fid = self._pandas_stack('datafid','chromatogram_fid')
+        self._chromatogram = self._pandas_stack('datams', 'chromatogram').astype('float32')
+        self._chromatogram_fid = self._pandas_stack('datafid','chromatogram_fid').astype('float32')
         self._spectra = self._dict_stack('datams', 'spectra')
 
 
@@ -652,8 +673,9 @@ class AgilentGcms(object):
     @property
     def spectra(self):
         """
+        normally returns all spectra, currently returning nothing to conserve memory
         """
-        return self._spectra
+        pass #return self._spectra
 
     @property
     def results_fid(self):
