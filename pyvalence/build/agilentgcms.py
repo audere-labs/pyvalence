@@ -647,8 +647,8 @@ class AgilentGcms(object):
         self._results_tic = self._pandas_stack('results', 'tic')
         self._results_fid = self._pandas_stack('results', 'fid')
         self._results_lib = self._pandas_stack('results', 'lib')
-        self._chromatogram = self._pandas_stack('datams', 'chromatogram').astype('float32')
-        self._chromatogram_fid = self._pandas_stack('datafid','chromatogram_fid').astype('float32')
+        self._chromatogram = self._pandas_stack('datams', 'chromatogram')
+        self._chromatogram_fid = self._pandas_stack('datafid','chromatogram_fid')
         self._spectra = self._dict_stack('datams', 'spectra')
 
 
