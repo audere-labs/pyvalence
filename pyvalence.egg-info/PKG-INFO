@@ -1,0 +1,21 @@
+Metadata-Version: 1.2
+Name: pyvalence
+Version: 0.0.1.2
+Summary: < 10 word
+Home-page: https://audere.github.com/valence
+Author: Audere Labs
+Author-email: audere.labs@gmail.com
+Maintainer-email: 
+License: BSD
+Description: 
+            xxx ...
+        
+Platform: Any
+Classifier: Development Status :: 1 - Planning
+Classifier: Environment :: Console
+Classifier: Intended Audience :: Science/Research
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python :: 3.3
+Classifier: Programming Language :: Python :: 3.4Programming Language :: Python :: 3.5
+Classifier: Programming Language :: Python :: 3.6
+Classifier: Topic :: Scientific/Engineering :: Chemistry
