@@ -4,7 +4,6 @@ import os
 from setuptools import setup
 from pyvalence import __version__
 
-
 PKG_NAME = 'pyvalence'
 PKG_AUTHOR = 'Audere Labs'
 PKG_LICENSE = 'BSD'
@@ -18,9 +17,7 @@ DOWNLOAD_URL = ''
 DESCRIPTION = 'Package for processing analytical chemistry data.'
 
 # Get the long description from the README file
-here = path.abspath(path.dirname(__file__))
-with open(path.join(here, 'README.md'), encoding='utf-8') as f:
-    LONG_DESCRIPTION = f.read()
+LONG_DESCRIPTION = 'pyvalence is a python package for processing data generated from analytical chemistry. pyvalence reads analytical data from native formats into readily accessible pandas DataFrames and supports common analysis techniques (e.g. standard curves regression and utilization) to reduce manual, one-off data processing. Analysis conducted with pyvalence allows researchers to spend less time processing data and more time interpreting results.'
 
 
 
