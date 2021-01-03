@@ -15,10 +15,13 @@ MAINTAINER_EMAIL = ''  # google group / forum
 URL = 'https://audere.github.com/valence'
 DOWNLOAD_URL = ''
 
-DESCRIPTION = '< 10 word'
-LONG_DESCRIPTION = '''
-    xxx ...
-'''
+DESCRIPTION = 'Package for processing analytical chemistry data.'
+
+# Get the long description from the README file
+here = path.abspath(path.dirname(__file__))
+with open(path.join(here, 'README.md'), encoding='utf-8') as f:
+    LONG_DESCRIPTION = f.read()
+
 
 
 options = {
