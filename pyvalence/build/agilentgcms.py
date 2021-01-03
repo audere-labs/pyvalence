@@ -573,7 +573,7 @@ class AgilentGcms(object):
             the folders' names are used.
     """
     @classmethod
-    def from_dir(cls, agilent_dir):
+    def read_folder(cls, agilent_dir):
         """ Initialize AgilentGcms from single Agilent .D folder.
 
             Parameters
@@ -591,7 +591,7 @@ class AgilentGcms(object):
         return cls(dir_list)
 
     @classmethod
-    def from_root(cls, root_dir):
+    def read_folders(cls, root_dir):
         """ Initialize AgilentGcms from root folder containing at least one
             Agilent .D folder.
 
@@ -675,7 +675,7 @@ class AgilentGcms(object):
         """
         normally returns all spectra, currently returning nothing to conserve memory
         """
-        pass #return self._spectra
+        return self._spectra
 
     @property
     def results_fid(self):
