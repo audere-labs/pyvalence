@@ -3,7 +3,7 @@
 import os
 from setuptools import setup
 from pyvalence import __version__
-
+from os import path
 
 PKG_NAME = 'pyvalence'
 PKG_AUTHOR = 'Audere Labs'
