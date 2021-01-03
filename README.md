@@ -55,7 +55,9 @@ conda install -c blakeboswell pyvalence
 
 ### PyPi
 
-> Forthcoming
+``` bash
+pip install pyvalence
+```
 
 ### Installing from Source
 
